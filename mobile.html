@@ -90,7 +90,44 @@ html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hi
 #news-section { background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%); }
 .m-page-title {
   text-align: center; font-size: 1.5rem; font-weight: 800; color: #1a3a6c;
-  padding: 1.5rem 1rem 1rem; letter-spacing: 0.1em;
+  padding: 1.5rem 1rem 0.75rem; letter-spacing: 0.1em;
+}
+.m-news-carousel {
+  position: relative;
+  width: calc(100% - 2rem);
+  margin: 0 1rem 1rem;
+  aspect-ratio: 16 / 9;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 16px rgba(30,70,130,0.15);
+}
+.m-news-carousel-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.6s ease-in-out;
+}
+.m-news-carousel-item.active { opacity: 1; }
+.m-news-carousel-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.m-news-carousel-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 1;
+}
+.m-news-carousel-dots .dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.55);
+}
+.m-news-carousel-dots .dot.active {
+  background: #fff;
+  width: 14px;
+  border-radius: 3px;
 }
 .m-news-list { list-style: none; padding: 0 1rem; }
 .m-news-item {
@@ -286,6 +323,12 @@ html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hi
 <!-- 快讯 -->
 <section class="m-section" id="news-section">
   <h2 class="m-page-title">社团快讯</h2>
+  <div class="m-news-carousel" id="mNewsCarousel">
+    <div class="m-news-carousel-item active"><img src="news-01.jpg" alt="主线第2章更新"></div>
+    <div class="m-news-carousel-item"><img src="news-02.jpg" alt="PRAY-BALL活动"></div>
+    <div class="m-news-carousel-item"><img src="news-03.png" alt="与你的日常就是奇迹"></div>
+    <div class="m-news-carousel-dots" id="mNewsCarouselDots"></div>
+  </div>
   <ul class="m-news-list">
     <li class="m-news-item">
       <span class="m-news-tag tag-notice">公告</span>
@@ -322,8 +365,7 @@ html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hi
       <p>巨额债务、废部危机、两大对立势力间的条约签订……各种各样的难题，等待着老师去解决。</p>
       <p>友情、青春和爱的故事即将展开。</p>
     </div>
-    <!-- 世界观插图占位：未提供 lore-city.png 资源，用 CSS 背景展示。如需启用可取消下一行注释 -->
-    <!-- <img class="m-lore-img" src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'"> -->
+    <img class="m-lore-img" src="lore-city.png" alt="基沃托斯城市">
     <div class="m-lore-footer">BLUE ARCHIVE /// KIVOTOS</div>
   </div>
 </section>
@@ -743,6 +785,36 @@ renderSchools();
 renderThumbs();
 renderCharacter();
 initGallery();
+initNewsCarousel();
+
+// 新闻轮播图
+function initNewsCarousel() {
+  const items = document.querySelectorAll('#mNewsCarousel .m-news-carousel-item');
+  const dotsContainer = document.getElementById('mNewsCarouselDots');
+  if (!items.length || !dotsContainer) return;
+
+  let current = 0;
+  let timer = null;
+
+  dotsContainer.innerHTML = Array.from(items, (_, i) => `
+    <div class="dot ${i === current ? 'active' : ''}" data-index="${i}"></div>
+  `).join('');
+
+  function show(index) {
+    items.forEach((item, i) => item.classList.toggle('active', i === index));
+    dotsContainer.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === index));
+    current = index;
+  }
+
+  function next() { show((current + 1) % items.length); }
+
+  dotsContainer.querySelectorAll('.dot').forEach(dot => {
+    dot.addEventListener('click', () => { show(parseInt(dot.dataset.index, 10)); resetTimer(); });
+  });
+
+  function resetTimer() { clearInterval(timer); timer = setInterval(next, 5000); }
+  resetTimer();
+}
 
 // 阻止双击缩放
 document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
