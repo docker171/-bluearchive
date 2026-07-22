@@ -312,16 +312,72 @@ body {
   position: relative;
   overflow: hidden;
 }
+.news-carousel {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+.news-carousel-item {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 0.8s ease-in-out;
+  pointer-events: none;
+}
+.news-carousel-item.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+.news-carousel-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.news-hero-overlay {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+  pointer-events: none;
+}
 .news-hero-text {
   font-size: 5rem;
   font-weight: 900;
   opacity: 0.25;
-  position: absolute;
 }
 .news-hero-sub {
   font-size: 1.5rem;
   font-weight: 700;
-  z-index: 1;
+}
+.news-carousel-dots {
+  position: absolute;
+  bottom: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
+  display: flex;
+  gap: 8px;
+  pointer-events: auto;
+}
+.news-carousel-dots .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+.news-carousel-dots .dot.active {
+  background: #fff;
+  width: 20px;
+  border-radius: 4px;
+}
+.news-carousel-dots .dot:hover {
+  background: rgba(255,255,255,0.85);
 }
 
 /* 设定/世界观页面 */
@@ -1184,9 +1240,17 @@ body {
       <a class="news-more" href="https://bluearchive-cn.com/news" target="_blank" rel="noopener noreferrer">更多新闻 &gt;&gt;</a>
     </div>
     <div class="news-right">
-      <div class="news-hero">
-        <div class="news-hero-text">NEWS</div>
-        <div class="news-hero-sub">Welcome to Kitvos</div>
+      <div class="news-hero" id="newsHero">
+        <div class="news-carousel" id="newsCarousel">
+          <div class="news-carousel-item active"><img src="news-01.jpg" alt="主线第2章更新"></div>
+          <div class="news-carousel-item"><img src="news-02.jpg" alt="PRAY-BALL活动"></div>
+          <div class="news-carousel-item"><img src="news-03.png" alt="与你的日常就是奇迹"></div>
+        </div>
+        <div class="news-hero-overlay">
+          <div class="news-hero-text">NEWS</div>
+          <div class="news-hero-sub">Welcome to Kitvos</div>
+        </div>
+        <div class="news-carousel-dots" id="newsCarouselDots"></div>
       </div>
     </div>
   </div>
@@ -1212,9 +1276,7 @@ body {
     </div>
     <div class="lore-right">
       <div class="lore-image">
-        <!-- 世界观插图占位：.lore-image 已有渐变背景作为默认展示，如需替换可在同目录放置 lore-city.png 并取消下一行注释 -->
-        <!-- <img src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'"> -->
-        <div class="lore-image-placeholder">KIVOTOS</div>
+        <img src="lore-city.png" alt="基沃托斯城市">
       </div>
     </div>
   </div>
@@ -1844,6 +1906,46 @@ renderSchools();
 renderThumbs();
 renderCharacter();
 initGallery();
+initNewsCarousel();
+
+// 新闻轮播图
+function initNewsCarousel() {
+  const items = document.querySelectorAll('#newsCarousel .news-carousel-item');
+  const dotsContainer = document.getElementById('newsCarouselDots');
+  if (!items.length || !dotsContainer) return;
+
+  let current = 0;
+  let timer = null;
+
+  // 生成 dots
+  dotsContainer.innerHTML = Array.from(items, (_, i) => `
+    <div class="dot ${i === current ? 'active' : ''}" data-index="${i}"></div>
+  `).join('');
+
+  function show(index) {
+    items.forEach((item, i) => item.classList.toggle('active', i === index));
+    dotsContainer.querySelectorAll('.dot').forEach((dot, i) => dot.classList.toggle('active', i === index));
+    current = index;
+  }
+
+  function next() {
+    show((current + 1) % items.length);
+  }
+
+  dotsContainer.querySelectorAll('.dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      show(parseInt(dot.dataset.index, 10));
+      resetTimer();
+    });
+  });
+
+  function resetTimer() {
+    clearInterval(timer);
+    timer = setInterval(next, 5000);
+  }
+
+  resetTimer();
+}
 
 // 键盘左右切换角色（在档案页面时）
 document.addEventListener('keydown', (e) => {
