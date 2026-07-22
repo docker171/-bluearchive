@@ -1,0 +1,1859 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kitvos</title>
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var isMobile = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini|IEMobile/i.test(ua);
+  if (isMobile) {
+    window.location.replace('mobile.html');
+  }
+})();
+</script>
+<style>
+html {
+  font-size: 16px;
+  margin: 0;
+  padding: 0;
+}
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  background: transparent;
+  overflow: hidden;
+}
+.header {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 4rem;
+  box-sizing: border-box;
+  z-index: 99;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.6), transparent);
+}
+.header .logo {
+  height: 45px;
+  object-fit: contain;
+  /* visibility: hidden 是因为 src 为空占位；填入 logo 后请移除这一行 */
+  visibility: hidden;
+}
+.menu {
+  display: flex;
+  align-items: center;
+  gap: 3rem;
+}
+.navBox {
+  display: flex;
+  gap: 2.5rem;
+}
+.nav {
+  font-size: 18px;
+  color: #fff;
+  text-shadow: 1px 1px 3px #000;
+  padding: 8px 0;
+  position: relative;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.nav.active::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: #fff;
+}
+.nav:hover {
+  opacity: 0.8;
+}
+.official-link {
+  color: #fff;
+  font-size: 18px;
+  text-shadow: 1px 1px 3px #000;
+  text-decoration: none;
+}
+.official-link:hover {
+  opacity: 0.8;
+}
+.menuBox {
+  display: flex;
+  gap: 1.5rem;
+  align-items: center;
+}
+.button {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  border: none;
+  background: transparent;
+  padding: 0;
+}
+.button:hover {
+  opacity: 0.7;
+}
+.music.icon, .user.icon, .share.icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+}
+.music.icon, .user.icon {
+  object-fit: contain;
+  display: block;
+}
+.share.icon {
+  background: #fff;
+}
+
+/* 页面版块：默认隐藏，首页默认显示 */
+.page-section {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  padding-top: 70px;
+  box-sizing: border-box;
+  z-index: 1;
+}
+#home-section {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.wrap {
+  width: 1400px;
+  height: 690px;
+  position: relative;
+  background-image: url("1.jpeg");
+  background-size: 1400px 690px;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: flex-start;
+  padding: 3.125rem 3.75rem;
+  color: #ffffff;
+  font-size: 3rem;
+  font-weight: bold;
+  text-shadow: 2px 2px 4px #000000;
+  text-align: right;
+  box-sizing: border-box;
+}
+.text-group {
+  margin-top: 160px;
+}
+.en-text {
+  font-size: 2rem;
+  margin-top: 10px;
+}
+.top-left-logo {
+  position: absolute;
+  top: 3.125rem;
+  left: 3.75rem;
+  width: 225px;
+  height: 117px;
+  object-fit: contain;
+  z-index: 10;
+}
+.play-btn {
+  position: absolute;
+  top: 5rem; /* 从 3.125rem 调到 5rem，避开顶部 70px 高的 header */
+  right: 3.75rem;
+  width: 120px;
+  height: 120px;
+  cursor: pointer;
+  transition: opacity 0.3s;
+  z-index: 10;
+  padding: 0;
+  border: none;
+  background: transparent;
+}
+.play-btn:hover {
+  opacity: 0.7;
+}
+.play-btn:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 4px;
+}
+
+/* 快讯页面 */
+#news-section {
+  background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%);
+  justify-content: center;
+  align-items: center;
+}
+.news-container {
+  width: 1200px;
+  max-width: 90vw;
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+.news-left {
+  flex: 1;
+}
+.news-title {
+  font-size: 2.5rem;
+  color: #2d8cf0;
+  margin: 0 0 1.5rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.news-title-arrow {
+  color: #ffd93d;
+  font-size: 1.5rem;
+}
+.news-filter {
+  display: flex;
+  gap: 0.75rem;
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 1.5rem;
+  align-items: center;
+}
+.filter-item {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.filter-item.active, .filter-item:hover {
+  color: #2d8cf0;
+  font-weight: 700;
+}
+.filter-dot {
+  color: #ccc;
+}
+.news-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem;
+}
+.news-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid #e0e8f7;
+  transition: background 0.2s;
+}
+.news-item:hover {
+  background: rgba(45, 140, 240, 0.05);
+}
+.news-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #fff;
+  font-weight: 700;
+}
+.tag-notice { background: #2d8cf0; }
+.tag-activity { background: #ff6b6b; }
+.news-date {
+  color: #999;
+  font-size: 0.9rem;
+  min-width: 64px;
+}
+.news-link {
+  color: #333;
+  text-decoration: none;
+  font-size: 1rem;
+  transition: color 0.2s;
+}
+.news-link:hover {
+  color: #2d8cf0;
+}
+.news-more {
+  color: #2d8cf0;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+.news-more:hover {
+  text-decoration: underline;
+}
+.news-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.news-hero {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #fff;
+  box-shadow: 0 20px 60px rgba(45, 140, 240, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+.news-hero-text {
+  font-size: 5rem;
+  font-weight: 900;
+  opacity: 0.25;
+  position: absolute;
+}
+.news-hero-sub {
+  font-size: 1.5rem;
+  font-weight: 700;
+  z-index: 1;
+}
+
+/* 设定/世界观页面 */
+#lore-section {
+  background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%);
+  justify-content: center;
+  align-items: center;
+}
+.lore-container {
+  width: 1200px;
+  max-width: 90vw;
+  display: flex;
+  gap: 3rem;
+  align-items: center;
+}
+.lore-left {
+  flex: 1;
+  color: #333;
+}
+.lore-title-en {
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: #2d8cf0;
+  margin: 0;
+  line-height: 1;
+}
+.lore-title-cn {
+  font-size: 2rem;
+  color: #2d8cf0;
+  font-weight: 700;
+  margin: 1rem 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.lore-title-arrow {
+  color: #ffd93d;
+  font-size: 1.25rem;
+}
+.lore-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: #555;
+}
+.lore-text p {
+  margin: 0 0 1rem;
+}
+.lore-text strong {
+  color: #2d8cf0;
+}
+.lore-footer {
+  font-size: 0.75rem;
+  color: #999;
+  margin-top: 2rem;
+  letter-spacing: 0.1em;
+}
+.lore-right {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.lore-image {
+  width: 100%;
+  aspect-ratio: 16 / 10;
+  background: linear-gradient(135deg, #87CEEB 0%, #E0F6FF 100%);
+  border-radius: 8px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #2d8cf0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  overflow: hidden;
+}
+.lore-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* 角色档案页面 */
+#archive-section {
+  background:
+    radial-gradient(ellipse 80% 70% at 50% 45%, rgba(255,255,255,0.95) 0%, rgba(225,238,252,0.7) 45%, rgba(205,225,248,0.4) 100%),
+    linear-gradient(135deg, #e8f1fc 0%, #d6e6f8 50%, #c9dcf3 100%);
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+}
+.archive-container {
+  width: 1400px;
+  max-width: 95vw;
+  height: 760px;
+  max-height: calc(100vh - 90px);
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: stretch;
+  box-sizing: border-box;
+  padding: 0 2rem;
+}
+.archive-main {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 320px 1fr 340px;
+  gap: 2rem;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+
+/* 左侧学校筛选 */
+.archive-schools {
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+.school-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.school-item {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255,255,255,0.6);
+  border: 2px solid transparent;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+  position: relative;
+}
+.school-item:hover {
+  transform: scale(1.1);
+  background: rgba(255,255,255,0.9);
+}
+.school-item.active {
+  border-color: currentColor;
+  background: #fff;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+}
+.school-item .school-icon {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #999;
+  font-size: 1.25rem;
+  font-weight: 700;
+  transition: color 0.3s;
+}
+.school-item.active .school-icon {
+  color: currentColor;
+}
+.school-item .school-label {
+  position: absolute;
+  left: 70px;
+  white-space: nowrap;
+  font-size: 0.85rem;
+  color: #666;
+  opacity: 0;
+  transition: opacity 0.2s;
+  pointer-events: none;
+}
+.school-item:hover .school-label,
+.school-item.active .school-label {
+  opacity: 1;
+}
+
+/* 角色信息左侧 */
+.char-left {
+  color: #333;
+  padding-left: 80px;
+}
+.char-name-en {
+  font-size: 4.5rem;
+  font-weight: 900;
+  color: #2d8cf0;
+  margin: 0;
+  line-height: 1;
+  letter-spacing: -0.02em;
+}
+.char-name-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+.char-school-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 1.1rem;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.char-name-cn {
+  font-size: 2.25rem;
+  font-weight: 800;
+  color: #333;
+  margin: 0;
+}
+.char-stars {
+  display: flex;
+  gap: 0.35rem;
+  margin-bottom: 0.75rem;
+}
+.char-star {
+  width: 24px;
+  height: 24px;
+  color: #333;
+  font-size: 1.25rem;
+  line-height: 1;
+}
+.char-star.empty {
+  color: #ccc;
+}
+.char-cv {
+  display: flex;
+  gap: 1.5rem;
+  font-size: 0.85rem;
+  color: #666;
+  margin-bottom: 2rem;
+}
+.char-cv span {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+.char-cv .cv-label {
+  font-size: 0.75rem;
+  color: #999;
+  text-transform: uppercase;
+}
+.char-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.info-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-size: 0.95rem;
+  color: #555;
+}
+.info-row::before {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #2d8cf0;
+  flex-shrink: 0;
+}
+.info-label {
+  color: #999;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  min-width: 40px;
+}
+
+/* 中间立绘 */
+.char-center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  position: relative;
+}
+.char-portrait-wrap {
+  height: 560px;
+  max-height: 70vh;
+  aspect-ratio: 2 / 3;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.char-portrait-wrap::before {
+  content: '';
+  position: absolute;
+  width: 115%;
+  height: 95%;
+  left: -7.5%;
+  top: 2.5%;
+  background: radial-gradient(ellipse at center, rgba(110,165,230,0.28) 0%, rgba(170,205,240,0.18) 45%, transparent 72%);
+  border-radius: 50%;
+  z-index: 0;
+  filter: blur(24px);
+  pointer-events: none;
+}
+.char-portrait {
+  height: 100%;
+  width: auto;
+  object-fit: contain;
+  position: relative;
+  z-index: 1;
+  filter: drop-shadow(0 18px 35px rgba(40,85,150,0.28)) drop-shadow(0 6px 12px rgba(0,0,0,0.12));
+  transition: opacity 0.3s, transform 0.3s;
+}
+.char-portrait.fade {
+  opacity: 0;
+  transform: translateY(10px);
+}
+.portrait-placeholder {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(45,140,240,0.08) 0%, rgba(255,255,255,0.4) 100%);
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #2d8cf0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  z-index: -1;
+}
+
+/* 右侧武器与学校徽章 */
+.char-right {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  position: relative;
+}
+.school-badge {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(255,255,255,0.5);
+  box-shadow: 0 8px 32px rgba(0,0,0,0.08);
+  color: rgba(0,0,0,0.15);
+  font-size: 4rem;
+  font-weight: 900;
+  position: relative;
+  overflow: hidden;
+}
+.school-badge img {
+  width: 80%;
+  height: 80%;
+  object-fit: contain;
+}
+.weapon-img {
+  width: 260px;
+  height: 160px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.weapon-img img {
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0 10px 20px rgba(0,0,0,0.12));
+}
+.weapon-card {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 180px;
+  height: 110px;
+  background: rgba(255,255,255,0.7);
+  border: 1px solid rgba(255,255,255,0.8);
+  border-radius: 8px;
+  transform: rotate(-6deg);
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 0.5rem;
+  z-index: -1;
+}
+.weapon-card .weapon-id {
+  font-size: 1.5rem;
+  font-weight: 900;
+  color: rgba(0,0,0,0.1);
+  letter-spacing: 0.05em;
+}
+.weapon-card .weapon-name {
+  font-size: 1rem;
+  font-weight: 700;
+  color: rgba(0,0,0,0.2);
+  writing-mode: vertical-rl;
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* 底部缩略图 */
+.archive-thumbs {
+  position: absolute;
+  right: 3rem;
+  bottom: 110px;
+  z-index: 10;
+}
+.thumbs-list {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  max-width: 320px;
+}
+.thumb-item {
+  width: 52px;
+  height: 52px;
+  border-radius: 12px;
+  border: 2px solid transparent;
+  background: rgba(255,255,255,0.7);
+  cursor: pointer;
+  overflow: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.thumb-item:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.12);
+}
+.thumb-item.active {
+  border-color: #2d8cf0;
+  box-shadow: 0 0 0 3px rgba(45,140,240,0.2);
+}
+.thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.thumb-initial {
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #666;
+}
+
+/* 底部滚动指示器 */
+.archive-scroll {
+  position: absolute;
+  left: 50%;
+  bottom: 60px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  z-index: 5;
+}
+.scroll-dots {
+  display: flex;
+  gap: 0.35rem;
+}
+.scroll-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #ccc;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.scroll-dot.active {
+  background: #2d8cf0;
+  width: 18px;
+  border-radius: 3px;
+}
+.scroll-text {
+  font-size: 0.75rem;
+  color: #999;
+  letter-spacing: 0.1em;
+}
+
+.archive-footer-left {
+  position: absolute;
+  left: 2rem;
+  bottom: 1.25rem;
+  font-size: 0.7rem;
+  color: #aaa;
+  letter-spacing: 0.05em;
+}
+.archive-footer-right {
+  position: absolute;
+  right: 2rem;
+  bottom: 1.25rem;
+  font-size: 0.85rem;
+  color: #aaa;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: right;
+}
+
+/* 图集页面 */
+#gallery-section {
+  background: linear-gradient(135deg, #f0f5fc 0%, #e2edf9 50%, #d5e5f7 100%);
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 5rem;
+  overflow-y: auto;
+}
+.gallery-container {
+  width: 1400px;
+  max-width: 95vw;
+  padding: 3rem 2rem 5rem;
+  box-sizing: border-box;
+}
+.gallery-header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+.gallery-title {
+  font-size: 2.6rem;
+  font-weight: 800;
+  color: #1a3a6c;
+  letter-spacing: 0.15em;
+  margin: 0 0 0.5rem;
+}
+.gallery-subtitle {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #4a7fc4;
+  letter-spacing: 0.35em;
+  margin: 0;
+  text-transform: uppercase;
+}
+.gallery-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.5rem;
+}
+.gallery-item {
+  position: relative;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 12px 30px rgba(30, 70, 130, 0.12);
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  aspect-ratio: 16 / 6;
+}
+.gallery-item:hover {
+  transform: translateY(-6px) scale(1.015);
+  box-shadow: 0 20px 45px rgba(30, 70, 130, 0.2);
+}
+.gallery-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transition: transform 0.5s ease;
+}
+.gallery-item:hover img {
+  transform: scale(1.05);
+}
+.gallery-lightbox {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 20, 40, 0.92);
+  z-index: 99999;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  cursor: zoom-out;
+}
+.gallery-lightbox.active {
+  display: flex;
+}
+.gallery-lightbox img {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+  object-fit: contain;
+}
+
+/* 图集分类筛选 */
+.gallery-filter {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.7rem;
+  justify-content: center;
+  margin-bottom: 2.5rem;
+  padding: 1.25rem 1.5rem;
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 16px;
+  box-shadow: 0 6px 20px rgba(30, 70, 130, 0.08);
+}
+.gallery-filter-tab {
+  padding: 0.55rem 1.3rem;
+  border: 2px solid #c8d8ec;
+  border-radius: 999px;
+  background: #fff;
+  color: #4a6c9c;
+  font-size: 0.92rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.04em;
+  white-space: nowrap;
+  font-family: inherit;
+}
+.gallery-filter-tab:hover {
+  border-color: #4a7fc4;
+  color: #1a3a6c;
+  transform: translateY(-2px);
+}
+.gallery-filter-tab.active {
+  background: linear-gradient(135deg, #2b5b9e 0%, #1a3a6c 100%);
+  color: #fff;
+  border-color: #1a3a6c;
+  box-shadow: 0 6px 16px rgba(26, 58, 108, 0.3);
+}
+.gallery-filter-count {
+  display: inline-block;
+  margin-left: 0.35rem;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.25);
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+.gallery-filter-tab:not(.active) .gallery-filter-count {
+  background: #e8f0fb;
+  color: #4a7fc4;
+}
+.gallery-item.hidden {
+  display: none;
+}
+.gallery-item-tag {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.6rem;
+  padding: 0.25rem 0.7rem;
+  border-radius: 999px;
+  background: rgba(26, 58, 108, 0.78);
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  backdrop-filter: blur(4px);
+  z-index: 2;
+  pointer-events: none;
+}
+.gallery-empty {
+  grid-column: 1 / -1;
+  text-align: center;
+  padding: 3.5rem 1rem;
+  color: #6a8bb8;
+  font-size: 1.05rem;
+  font-weight: 500;
+}
+@media (max-width: 1024px) {
+  .gallery-grid { grid-template-columns: repeat(2, 1fr); gap: 1.2rem; }
+}
+@media (max-width: 640px) {
+  .gallery-grid { grid-template-columns: 1fr; gap: 1rem; }
+  .gallery-title { font-size: 2rem; }
+}
+
+.video-mask {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(0,0,0,0.85);
+  z-index: 9999;
+  align-items: center;
+  justify-content: center;
+}
+.video-box {
+  position: relative;
+  width: 80%;
+  max-width: 1200px;
+}
+.video-box video {
+  width: 100%;
+  display: block;
+}
+.close-video {
+  position: absolute;
+  top: -40px;
+  right: 0;
+  color: #fff;
+  font-size: 32px;
+  cursor: pointer;
+  padding: 4px 8px;
+  border: none;
+  background: transparent;
+  line-height: 1;
+}
+.close-video:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+/* 响应式：小屏幕等比缩放 wrap，避免被裁切 */
+@media (max-width: 1400px), (max-height: 690px) {
+  body { overflow: auto; }
+  .wrap {
+    transform-origin: center center;
+  }
+}
+@media (max-width: 768px) {
+  .header { padding: 0 1rem; height: 56px; }
+  .navBox { gap: 1.25rem; }
+  .nav, .official-link { font-size: 14px; }
+  .menu { gap: 1rem; }
+  .wrap {
+    width: 100vw;
+    height: auto;
+    aspect-ratio: 1400 / 690;
+    background-size: cover;
+    font-size: 1.75rem;
+    padding: 1.5rem;
+  }
+  .text-group { margin-top: 80px; }
+  .en-text { font-size: 1.25rem; }
+  .top-left-logo { width: 120px; height: auto; top: 1.5rem; left: 1.5rem; }
+  .play-btn { width: 72px; height: 72px; top: 4rem; right: 1.5rem; }
+  .news-container { flex-direction: column; }
+  .news-title { font-size: 1.75rem; }
+  .news-hero-text { font-size: 3rem; }
+  .lore-container { flex-direction: column; }
+  .lore-title-en { font-size: 3rem; }
+  .lore-title-cn { font-size: 1.5rem; }
+  .lore-image { aspect-ratio: 16 / 9; }
+  .archive-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr auto;
+    gap: 1rem;
+  }
+  .char-left { padding-left: 60px; text-align: center; }
+  .char-name-en { font-size: 2.5rem; }
+  .char-name-cn { font-size: 1.5rem; }
+  .char-center { order: -1; }
+  .char-portrait-wrap { height: 280px; }
+  .archive-schools { left: 0.5rem; top: 40%; }
+  .school-item { width: 40px; height: 40px; }
+  .archive-thumbs { right: 1rem; bottom: 90px; max-width: 220px; }
+  .thumb-item { width: 40px; height: 40px; }
+  .archive-footer-left, .archive-footer-right { font-size: 0.6rem; }
+}
+</style>
+</head>
+<body>
+<!-- 背景音乐 9.mp3：audio 标签必须闭合，否则后续 DOM 会被吞进去 -->
+<audio id="bgMusic" loop>
+  <source src="9.mp3" type="audio/mpeg">
+  浏览器不支持音频播放
+</audio>
+
+<div data-v-69d39f2c="" data-v-526e4b4c="" class="header">
+  <img data-v-69d39f2c="" class="logo" alt="站点 Logo">
+  <div data-v-69d39f2c="" class="menu">
+    <div data-v-69d39f2c="" class="navBox">
+      <div data-v-69d39f2c="" class="nav active" data-section="home"><span>首 页</span></div>
+      <div data-v-69d39f2c="" class="nav" data-section="news"><span>快 讯</span></div>
+      <div data-v-69d39f2c="" class="nav" data-section="lore"><span>设 定</span></div>
+      <div data-v-69d39f2c="" class="nav" data-section="archive"><span>档 案</span></div>
+      <div data-v-69d39f2c="" class="nav" data-section="gallery"><span>图 集</span></div>
+      <a href="https://bluearchive-cn.com/" target="_blank" rel="noopener noreferrer" class="official-link">官网</a>
+    </div>
+    <div data-v-69d39f2c="" class="menuBox">
+      <button data-v-69d39f2c="" type="button" class="button" id="musicBtn" aria-label="切换背景音乐">
+        <img data-v-69d39f2c="" class="music icon" id="musicIcon" src="m.png" alt="音乐">
+      </button>
+      <a data-v-69d39f2c="" href="https://account.yostar.cn/" target="_blank" rel="noopener noreferrer" class="button" aria-label="用户中心">
+        <img data-v-69d39f2c="" class="user icon" src="user.png" alt="用户中心">
+      </a>
+      <button data-v-69d39f2c="" type="button" class="button" aria-label="分享">
+        <div data-v-69d39f2c="" class="share icon"></div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 首页 -->
+<section class="page-section" id="home-section">
+  <div class="wrap">
+    <img class="top-left-logo" src="2.png" alt="页面 Logo">
+    <!-- 建议把"下载.png"重命名为英文如 play.png，避免部署时 URL 编码问题 -->
+    <button class="play-btn" type="button" onclick="openVideo()" aria-label="播放视频">
+      <img src="play.png" alt="播放">
+    </button>
+    <div class="text-group">
+      <div>欢迎来到基沃托斯</div>
+      <div class="en-text">welcome to kitvos</div>
+    </div>
+  </div>
+</section>
+
+<!-- 快讯页面 -->
+<section class="page-section" id="news-section">
+  <div class="news-container">
+    <div class="news-left">
+      <h2 class="news-title">
+        <span class="news-title-arrow">◀</span>
+        社团快讯
+        <span class="news-title-arrow">▶</span>
+      </h2>
+      <div class="news-filter">
+        <span class="filter-item active">最新</span>
+        <span class="filter-dot">·</span>
+        <span class="filter-item">新闻</span>
+        <span class="filter-dot">·</span>
+        <span class="filter-item">公告</span>
+        <span class="filter-dot">·</span>
+        <span class="filter-item">活动</span>
+      </div>
+      <ul class="news-list">
+        <li class="news-item">
+          <span class="news-tag tag-notice">公告</span>
+          <span class="news-date">26.07.16</span>
+          <a class="news-link" href="https://bluearchive-cn.com/news/1868" target="_blank" rel="noopener noreferrer">07月16日异常问题说明</a>
+        </li>
+        <li class="news-item">
+          <span class="news-tag tag-activity">活动</span>
+          <span class="news-date">26.07.15</span>
+          <a class="news-link" href="https://bluearchive-cn.com/news/1867" target="_blank" rel="noopener noreferrer">07月16日维护更新说明</a>
+        </li>
+        <li class="news-item">
+          <span class="news-tag tag-notice">公告</span>
+          <span class="news-date">26.07.14</span>
+          <a class="news-link" href="https://bluearchive-cn.com/news/1866" target="_blank" rel="noopener noreferrer">07月16日功能新增&amp;优化说明</a>
+        </li>
+        <li class="news-item">
+          <span class="news-tag tag-activity">活动</span>
+          <span class="news-date">26.07.14</span>
+          <a class="news-link" href="https://bluearchive-cn.com/news/1850" target="_blank" rel="noopener noreferrer">PRAY-BALL!目标：满贯本垒打</a>
+        </li>
+      </ul>
+      <a class="news-more" href="https://bluearchive-cn.com/news" target="_blank" rel="noopener noreferrer">更多新闻 &gt;&gt;</a>
+    </div>
+    <div class="news-right">
+      <div class="news-hero">
+        <div class="news-hero-text">NEWS</div>
+        <div class="news-hero-sub">Welcome to Kitvos</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 设定页面 / 世界观概况 -->
+<section class="page-section" id="lore-section">
+  <div class="lore-container">
+    <div class="lore-left">
+      <h2 class="lore-title-en">KIVOTOS</h2>
+      <h3 class="lore-title-cn">
+        <span class="lore-title-arrow">◀</span>
+        世界观概况
+        <span class="lore-title-arrow">▶</span>
+      </h3>
+      <div class="lore-text">
+        <p><strong>基沃托斯</strong>，一片神秘而辽阔的土地，头上有着奇异光环的少女们生活在这里。然而，联邦理事会管理下的平静生活随着会长的不辞而别被打破，在群龙无首的基沃托斯，危机一触即发！</p>
+        <p>在这样的混乱之中，会长留下的搜查社“沙勒”将扮演怎样的角色？从外面的世界来到基沃托斯的老师又将与少女们发生怎样的邂逅？</p>
+        <p>巨额债务、废部危机、两大对立势力间的条约签订……各种各样的难题，等待着老师去解决。</p>
+        <p>友情、青春和爱的故事即将展开。</p>
+      </div>
+      <div class="lore-footer">BLUE ARCHIVE /// KIVOTOS</div>
+    </div>
+    <div class="lore-right">
+      <div class="lore-image">
+        <!-- 把世界观插图放到网页同目录并命名为 lore-city.png 即可替换占位图 -->
+        <img src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 角色档案页面 -->
+<section class="page-section" id="archive-section">
+  <div class="archive-container">
+    <!-- 左侧学校筛选 -->
+    <aside class="archive-schools">
+      <div class="school-list" id="schoolList"></div>
+    </aside>
+
+    <!-- 主体 -->
+    <div class="archive-main">
+      <div class="char-left">
+        <h1 class="char-name-en" id="charNameEn">HOSHINO</h1>
+        <div class="char-name-row">
+          <span class="char-school-icon" id="charSchoolIcon">△</span>
+          <h2 class="char-name-cn" id="charNameCn">小鸟游星野</h2>
+        </div>
+        <div class="char-stars" id="charStars"></div>
+        <div class="char-cv" id="charCv">
+          <span><span class="cv-label">日配</span>花守由美里</span>
+          <span><span class="cv-label">中配</span>刘雯</span>
+        </div>
+        <div class="char-info">
+          <div class="info-row"><span class="info-label">所属</span><span id="charSchool">阿拜多斯</span></div>
+          <div class="info-row"><span class="info-label">社团</span><span id="charClub">对策委员会</span></div>
+          <div class="info-row"><span class="info-label">生日</span><span id="charBirth">1月2日</span></div>
+        </div>
+      </div>
+
+      <div class="char-center">
+        <div class="char-portrait-wrap">
+          <div class="portrait-placeholder" id="portraitPlaceholder">
+            <div id="placeholderText">HOSHINO</div>
+            <div style="font-size:0.85rem;font-weight:400;color:#999;margin-top:0.5rem;">角色立绘占位</div>
+          </div>
+          <img class="char-portrait" id="charPortrait" src="characters/hoshino.png" alt="角色立绘" onerror="handleImageError(this)">
+        </div>
+      </div>
+
+      <div class="char-right">
+        <div class="school-badge" id="schoolBadge">
+          <span id="schoolBadgeText">△</span>
+        </div>
+        <div class="weapon-img">
+          <div class="weapon-card">
+            <div class="weapon-id" id="weaponId">AR</div>
+            <div class="weapon-name" id="weaponName">hoshino</div>
+          </div>
+          <img id="weaponImg" src="characters/hoshino-weapon.png" alt="武器" onerror="handleImageError(this)">
+        </div>
+      </div>
+    </div>
+
+    <!-- 底部角色切换 -->
+    <div class="archive-thumbs">
+      <div class="thumbs-list" id="thumbsList"></div>
+    </div>
+
+    <!-- 底部滚动指示器 -->
+    <div class="archive-scroll">
+      <div class="scroll-dots" id="scrollDots"></div>
+      <span class="scroll-text">SCROLL</span>
+    </div>
+
+    <div class="archive-footer-left">BLUE ARCHIVE /// CHARACTER INFO</div>
+    <div class="archive-footer-right" id="charNameFooter">TAKANASHI HOSHINO</div>
+  </div>
+</section>
+
+<!-- 图集页面 -->
+<section class="page-section" id="gallery-section">
+  <div class="gallery-container">
+    <div class="gallery-header">
+      <h1 class="gallery-title">图集</h1>
+      <p class="gallery-subtitle">GALLERY</p>
+    </div>
+    <div class="gallery-filter" id="galleryFilter"></div>
+    <div class="gallery-grid" id="galleryGrid"></div>
+  </div>
+</section>
+
+<div class="gallery-lightbox" id="galleryLightbox" onclick="closeGalleryLightbox()">
+  <img id="galleryLightboxImg" src="" alt="大图">
+</div>
+
+<div class="video-mask" id="videoMask">
+  <div class="video-box">
+    <button type="button" class="close-video" onclick="closeVideo()" aria-label="关闭视频">×</button>
+    <video id="myVideo" controls>
+      <source src="3.mp4" type="video/mp4">
+      当前浏览器不支持播放MP4视频
+    </video>
+  </div>
+</div>
+
+<script>
+const mask = document.getElementById('videoMask');
+const video = document.getElementById('myVideo');
+const bgMusic = document.getElementById('bgMusic');
+const musicBtn = document.getElementById('musicBtn');
+const musicIcon = document.getElementById('musicIcon');
+let isMusicOn = false;
+let audioInit = false;
+
+function updateMusicIcon() {
+  if (musicIcon) {
+    musicIcon.src = isMusicOn ? '3.png' : 'm.png';
+  }
+}
+
+// 导航切换
+const navs = document.querySelectorAll('.nav');
+const sectionMap = {
+  home: 'home-section',
+  news: 'news-section',
+  lore: 'lore-section',
+  archive: 'archive-section',
+  gallery: 'gallery-section'
+};
+
+function switchSection(targetName) {
+  const targetId = sectionMap[targetName] || 'home-section';
+  navs.forEach(n => n.classList.toggle('active', n.dataset.section === targetName));
+  document.querySelectorAll('.page-section').forEach(s => s.style.display = 'none');
+  const target = document.getElementById(targetId);
+  if (target) target.style.display = 'flex';
+}
+
+// 图集分类数据 —— 每张图的分类归属
+// category: 'wallpaper'(壁纸) | 'comic'(漫画) | 'episode'(第几部第几话)
+// episode/chapter: 仅当 category === 'episode' 时使用，表示第几部第几话
+// ⚠️ 以下是按顺序的推测性分类，请按实际图片内容校正后告诉我，我立即调整
+const galleryData = [
+  { id: 1,  category: 'wallpaper' },
+  { id: 2,  category: 'wallpaper' },
+  { id: 3,  category: 'wallpaper' },
+  { id: 4,  category: 'wallpaper' },
+  { id: 5,  category: 'wallpaper' },
+  { id: 6,  category: 'wallpaper' },
+  { id: 7,  category: 'wallpaper' },
+  { id: 8,  category: 'wallpaper' },
+  { id: 9,  category: 'comic' },
+  { id: 10, category: 'comic' },
+  { id: 11, category: 'comic' },
+  { id: 12, category: 'comic' },
+  { id: 13, category: 'comic' },
+  { id: 14, category: 'comic' },
+  { id: 15, category: 'comic' },
+  { id: 16, category: 'comic' },
+  { id: 17, category: 'comic' },
+  { id: 18, category: 'comic' },
+  { id: 19, category: 'episode', episode: 1, chapter: 1 },
+  { id: 20, category: 'episode', episode: 1, chapter: 1 },
+  { id: 21, category: 'episode', episode: 1, chapter: 1 },
+  { id: 22, category: 'episode', episode: 1, chapter: 1 },
+  { id: 23, category: 'episode', episode: 1, chapter: 1 },
+  { id: 24, category: 'episode', episode: 1, chapter: 2 },
+  { id: 25, category: 'episode', episode: 1, chapter: 2 },
+  { id: 26, category: 'episode', episode: 1, chapter: 2 },
+  { id: 27, category: 'episode', episode: 1, chapter: 2 },
+  { id: 28, category: 'episode', episode: 1, chapter: 2 },
+  { id: 29, category: 'episode', episode: 2, chapter: 1 },
+  { id: 30, category: 'episode', episode: 2, chapter: 1 },
+  { id: 31, category: 'episode', episode: 2, chapter: 1 },
+  { id: 32, category: 'episode', episode: 2, chapter: 1 },
+  { id: 33, category: 'episode', episode: 2, chapter: 1 },
+  { id: 34, category: 'episode', episode: 2, chapter: 1 },
+  { id: 35, category: 'episode', episode: 2, chapter: 1 }
+];
+
+// 筛选标签定义（动态生成，基于 galleryData）
+function buildGalleryFilters() {
+  const filters = [{ key: 'all', label: '全部' }];
+  // 统计壁纸、漫画数量
+  const wpCount = galleryData.filter(g => g.category === 'wallpaper').length;
+  const comicCount = galleryData.filter(g => g.category === 'comic').length;
+  if (wpCount) filters.push({ key: 'wallpaper', label: '壁纸', count: wpCount });
+  if (comicCount) filters.push({ key: 'comic', label: '漫画', count: comicCount });
+  // 按 部-话 分组
+  const episodeMap = {};
+  galleryData.forEach(g => {
+    if (g.category === 'episode') {
+      const k = `${g.episode}-${g.chapter}`;
+      if (!episodeMap[k]) episodeMap[k] = 0;
+      episodeMap[k]++;
+    }
+  });
+  Object.keys(episodeMap).sort((a, b) => {
+    const [e1, c1] = a.split('-').map(Number);
+    const [e2, c2] = b.split('-').map(Number);
+    return e1 - e2 || c1 - c2;
+  }).forEach(k => {
+    const [e, c] = k.split('-');
+    filters.push({ key: `episode-${k}`, label: `第${e}部 第${c}话`, count: episodeMap[k] });
+  });
+  return filters;
+}
+
+function categoryLabel(item) {
+  if (item.category === 'wallpaper') return '壁纸';
+  if (item.category === 'comic') return '漫画';
+  if (item.category === 'episode') return `第${item.episode}部 ${item.chapter}话`;
+  return '';
+}
+
+// 图集
+function initGallery() {
+  const grid = document.getElementById('galleryGrid');
+  const filterBar = document.getElementById('galleryFilter');
+  if (!grid) return;
+
+  // 渲染筛选标签
+  const filters = buildGalleryFilters();
+  filterBar.innerHTML = '';
+  filters.forEach((f, idx) => {
+    const tab = document.createElement('button');
+    tab.className = 'gallery-filter-tab' + (idx === 0 ? ' active' : '');
+    tab.dataset.filter = f.key;
+    tab.innerHTML = f.label + (f.count != null ? `<span class="gallery-filter-count">${f.count}</span>` : '');
+    tab.onclick = () => filterGallery(f.key);
+    filterBar.appendChild(tab);
+  });
+
+  // 渲染图片
+  grid.innerHTML = '';
+  galleryData.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'gallery-item';
+    div.dataset.category = item.category;
+    if (item.category === 'episode') {
+      div.dataset.episode = `${item.episode}-${item.chapter}`;
+    }
+    div.onclick = () => openGalleryLightbox(item.id);
+
+    const tag = document.createElement('span');
+    tag.className = 'gallery-item-tag';
+    tag.textContent = categoryLabel(item);
+    div.appendChild(tag);
+
+    const img = document.createElement('img');
+    img.src = `gallery/gallery-${String(item.id).padStart(2, '0')}.jpg`;
+    img.alt = `图集 ${item.id} - ${categoryLabel(item)}`;
+    img.loading = 'lazy';
+    div.appendChild(img);
+    grid.appendChild(div);
+  });
+}
+
+function filterGallery(key) {
+  document.querySelectorAll('.gallery-filter-tab').forEach(t => {
+    t.classList.toggle('active', t.dataset.filter === key);
+  });
+  let visibleCount = 0;
+  document.querySelectorAll('.gallery-item').forEach(item => {
+    let show = false;
+    if (key === 'all') {
+      show = true;
+    } else if (key.startsWith('episode-')) {
+      show = item.dataset.episode === key.replace('episode-', '');
+    } else {
+      show = item.dataset.category === key;
+    }
+    item.classList.toggle('hidden', !show);
+    if (show) visibleCount++;
+  });
+  // 空状态提示
+  let empty = document.getElementById('galleryEmpty');
+  if (visibleCount === 0) {
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.id = 'galleryEmpty';
+      empty.className = 'gallery-empty';
+      empty.textContent = '该分类下暂无图片';
+      document.getElementById('galleryGrid').appendChild(empty);
+    }
+  } else if (empty) {
+    empty.remove();
+  }
+}
+
+function openGalleryLightbox(index) {
+  const lightbox = document.getElementById('galleryLightbox');
+  const img = document.getElementById('galleryLightboxImg');
+  img.src = `gallery/gallery-${String(index).padStart(2, '0')}.jpg`;
+  lightbox.classList.add('active');
+}
+
+function closeGalleryLightbox() {
+  const lightbox = document.getElementById('galleryLightbox');
+  lightbox.classList.remove('active');
+}
+
+// 关闭图集 lightbox 的 ESC 支持
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') closeGalleryLightbox();
+});
+
+navs.forEach(nav => {
+  nav.addEventListener('click', () => switchSection(nav.dataset.section));
+});
+
+// 音乐只在用户主动点击音乐按钮时播放，不在页面任意点击时自动响
+// （浏览器允许用户主动点击触发的音频播放）
+
+// 音乐按钮开关
+musicBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  if (!audioInit) {
+    bgMusic.load();
+    audioInit = true;
+  }
+  if (!isMusicOn) {
+    bgMusic.play().then(() => {
+      isMusicOn = true;
+      updateMusicIcon();
+    }).catch(() => {
+      alert('背景音乐播放失败：请确认 9.mp3 与页面同目录');
+    });
+  } else {
+    bgMusic.pause();
+    isMusicOn = false;
+    updateMusicIcon();
+  }
+});
+
+// 打开视频暂停背景音乐
+function openVideo() {
+  mask.style.display = 'flex';
+  if (isMusicOn) bgMusic.pause();
+  video.play().catch(() => {
+    alert('视频播放失败：确认 3.mp4 文件和网页同文件夹，使用 Live Server 打开页面');
+  });
+}
+
+// 关闭视频恢复背景音乐
+function closeVideo() {
+  mask.style.display = 'none';
+  video.pause();
+  video.currentTime = 0;
+  if (isMusicOn) bgMusic.play().catch(() => {});
+}
+
+// 点击遮罩空白关闭视频
+mask.addEventListener('click', function(e) {
+  if (e.target === mask) closeVideo();
+});
+
+// ESC 键关闭视频，提升可访问性
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape' && mask.style.display === 'flex') closeVideo();
+});
+
+// ===== 角色档案系统 =====
+const schools = [
+  { id: 'all', name: '全部', icon: '✦', color: '#2d8cf0' },
+  { id: 'abydos', name: '阿拜多斯', icon: '△', color: '#f5a623' },
+  { id: 'millennium', name: '千年', icon: '◇', color: '#2d8cf0' },
+  { id: 'gehenna', name: '歌赫娜', icon: '✦', color: '#e74c3c' },
+  { id: 'trinity', name: '崔尼蒂', icon: '✚', color: '#9b59b6' },
+  { id: 'hyakkiyako', name: '百鬼夜行', icon: '◎', color: '#e91e63' },
+  { id: 'shanhaijing', name: '山海经', icon: '◉', color: '#1abc9c' }
+];
+
+const characters = [
+  {
+    id: 'hoshino', nameEn: 'HOSHINO', nameCn: '小鸟游星野', nameFull: 'TAKANASHI HOSHINO',
+    school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '1月2日',
+    star: 3, cvJp: '花守由美里', cvCn: '刘雯', weaponType: 'SG', weaponName: 'hoshino'
+  },
+  {
+    id: 'ayane', nameEn: 'AYANE', nameCn: '奥空绫音', nameFull: 'OKUSORA AYANE',
+    school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '11月12日',
+    star: 2, cvJp: '原田彩枫', cvCn: '孙艳琦', weaponType: 'HG', weaponName: 'ayane'
+  },
+  {
+    id: 'serika', nameEn: 'SERIKA', nameCn: '黑见芹香', nameFull: 'KUROMI SERIKA',
+    school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '6月25日',
+    star: 2, cvJp: '大桥彩香', cvCn: '宴宁', weaponType: 'AR', weaponName: 'serika'
+  },
+  {
+    id: 'nonomi', nameEn: 'NONOMI', nameCn: '十六夜野宫', nameFull: 'IZAYOI NONOMI',
+    school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '9月1日',
+    star: 2, cvJp: '三浦千幸', cvCn: '幽舞越山', weaponType: 'MG', weaponName: 'nonomi'
+  },
+  {
+    id: 'shiroko', nameEn: 'SHIROKO', nameCn: '砂狼白子', nameFull: 'SUNAOKAMI SHIROKO',
+    school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '5月16日',
+    star: 3, cvJp: '小仓唯', cvCn: '安雪璃', weaponType: 'AR', weaponName: 'shiroko'
+  },
+  {
+    id: 'aris', nameEn: 'ARIS', nameCn: '天童爱丽丝', nameFull: 'TENDOU ARIS',
+    school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '3月25日',
+    star: 3, cvJp: '田中美海', cvCn: '四白', weaponType: 'RG', weaponName: 'aris'
+  },
+  {
+    id: 'midori', nameEn: 'MIDORI', nameCn: '才羽绿', nameFull: 'SAIBA MIDORI',
+    school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '12月8日',
+    star: 3, cvJp: '高田忧希', cvCn: '阎么么', weaponType: 'AR', weaponName: 'midori'
+  },
+  {
+    id: 'momoi', nameEn: 'MOMOI', nameCn: '才羽桃', nameFull: 'SAIBA MOMOI',
+    school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '12月8日',
+    star: 2, cvJp: '德井青空', cvCn: '苏枕袖', weaponType: 'AR', weaponName: 'momoi'
+  },
+  {
+    id: 'karin', nameEn: 'KARIN', nameCn: '角楯花凛', nameFull: 'KAKUDATE KARIN',
+    school: 'millennium', schoolName: '千年', club: 'C&C', birthday: '2月2日',
+    star: 3, cvJp: '沼仓爱美', cvCn: '喵酱', weaponType: 'SR', weaponName: 'karin'
+  },
+  {
+    id: 'yuuka', nameEn: 'YUUKA', nameCn: '早濑优香', nameFull: 'HAYASE YUUKA',
+    school: 'millennium', schoolName: '千年', club: '研讨会', birthday: '3月14日',
+    star: 2, cvJp: '春花兰', cvCn: '小敢', weaponType: 'SMG', weaponName: 'yuuka'
+  },
+  {
+    id: 'mutsuki', nameEn: 'MUTSUKI', nameCn: '浅黄睦月', nameFull: 'ASAGI MUTSUKI',
+    school: 'gehenna', schoolName: '歌赫娜', club: '便利屋68', birthday: '7月29日',
+    star: 2, cvJp: '大久保瑠美', cvCn: '侯小菲', weaponType: 'AR', weaponName: 'mutsuki'
+  },
+  {
+    id: 'aru', nameEn: 'ARU', nameCn: '陆八魔爱露', nameFull: 'RIKUHACHIMA ARU',
+    school: 'gehenna', schoolName: '歌赫娜', club: '便利屋68', birthday: '3月12日',
+    star: 3, cvJp: '近藤玲奈', cvCn: '谢莹', weaponType: 'SR', weaponName: 'aru'
+  },
+  {
+    id: 'iori', nameEn: 'IORI', nameCn: '银镜伊织', nameFull: 'SHIOMI IORI',
+    school: 'gehenna', schoolName: '歌赫娜', club: '风纪委员会', birthday: '11月8日',
+    star: 3, cvJp: '佐仓绫音', cvCn: '兰笛Saku', weaponType: 'SR', weaponName: 'iori'
+  },
+  {
+    id: 'hina', nameEn: 'HINA', nameCn: '空崎日奈', nameFull: 'SORASAKI HINA',
+    school: 'gehenna', schoolName: '歌赫娜', club: '风纪委员会', birthday: '2月19日',
+    star: 3, cvJp: '广桥凉', cvCn: '王雅欣', weaponType: 'MG', weaponName: 'hina'
+  },
+  {
+    id: 'haruna', nameEn: 'HARUNA', nameCn: '黑馆晴奈', nameFull: 'KURODATE HARUNA',
+    school: 'gehenna', schoolName: '歌赫娜', club: '美食研究会', birthday: '3月1日',
+    star: 3, cvJp: '田所梓', cvCn: 'MACE', weaponType: 'SR', weaponName: 'haruna'
+  },
+  {
+    id: 'hasumi', nameEn: 'HASUMI', nameCn: '羽川莲见', nameFull: 'HANEKAWA HASUMI',
+    school: 'trinity', schoolName: '崔尼蒂', club: '正义实现部', birthday: '12月12日',
+    star: 2, cvJp: '濑户麻沙美', cvCn: '张琦', weaponType: 'SR', weaponName: 'hasumi'
+  },
+  {
+    id: 'hifumi', nameEn: 'HIFUMI', nameCn: '阿慈谷日富美', nameFull: 'AJITAN HIFUMI',
+    school: 'trinity', schoolName: '崔尼蒂', club: '补习部', birthday: '11月27日',
+    star: 3, cvJp: '本渡枫', cvCn: '米糊', weaponType: 'AR', weaponName: 'hifumi'
+  },
+  {
+    id: 'izuna', nameEn: 'IZUNA', nameCn: '久田泉奈', nameFull: 'KUDA IZUNA',
+    school: 'hyakkiyako', schoolName: '百鬼夜行', club: '忍术研究部', birthday: '12月16日',
+    star: 3, cvJp: '阿澄佳奈', cvCn: 'Z君', weaponType: 'AR', weaponName: 'izuna'
+  },
+  {
+    id: 'chise', nameEn: 'CHISE', nameCn: '和乐千世', nameFull: 'WARAKU CHISE',
+    school: 'hyakkiyako', schoolName: '百鬼夜行', club: '阴阳部', birthday: '7月13日',
+    star: 2, cvJp: '岛村侑', cvCn: '紫苏九月', weaponType: 'GL', weaponName: 'chise'
+  },
+  {
+    id: 'saya', nameEn: 'SAYA', nameCn: '药子纱绫', nameFull: 'YAKUSHI SAYA',
+    school: 'shanhaijing', schoolName: '山海经', club: '炼丹研究会', birthday: '1月3日',
+    star: 3, cvJp: '田村由加莉', cvCn: '王晓彤', weaponType: 'HG', weaponName: 'saya'
+  },
+  {
+    id: 'shun', nameEn: 'SHUN', nameCn: '春原瞬', nameFull: 'SUNOHARA SHUN',
+    school: 'shanhaijing', schoolName: '山海经', club: '梅花园', birthday: '2月5日',
+    star: 3, cvJp: '伊藤静', cvCn: '秦紫翼', weaponType: 'SR', weaponName: 'shun'
+  }
+];
+
+let currentSchool = 'all';
+let currentCharIndex = 0;
+let filteredChars = [...characters];
+
+const schoolListEl = document.getElementById('schoolList');
+const charNameEnEl = document.getElementById('charNameEn');
+const charNameCnEl = document.getElementById('charNameCn');
+const charSchoolIconEl = document.getElementById('charSchoolIcon');
+const charStarsEl = document.getElementById('charStars');
+const charCvEl = document.getElementById('charCv');
+const charSchoolEl = document.getElementById('charSchool');
+const charClubEl = document.getElementById('charClub');
+const charBirthEl = document.getElementById('charBirth');
+const charPortraitEl = document.getElementById('charPortrait');
+const portraitPlaceholderEl = document.getElementById('portraitPlaceholder');
+const placeholderTextEl = document.getElementById('placeholderText');
+const schoolBadgeEl = document.getElementById('schoolBadge');
+const schoolBadgeTextEl = document.getElementById('schoolBadgeText');
+const weaponImgEl = document.getElementById('weaponImg');
+const weaponIdEl = document.getElementById('weaponId');
+const weaponNameEl = document.getElementById('weaponName');
+const thumbsListEl = document.getElementById('thumbsList');
+const scrollDotsEl = document.getElementById('scrollDots');
+const charNameFooterEl = document.getElementById('charNameFooter');
+
+function handleImageError(img) {
+  img.style.display = 'none';
+}
+
+function getSchool(id) {
+  return schools.find(s => s.id === id) || schools[0];
+}
+
+function renderSchools() {
+  schoolListEl.innerHTML = schools.map(s => `
+    <div class="school-item ${s.id === currentSchool ? 'active' : ''}" 
+         data-school="${s.id}" 
+         style="color: ${s.color};"
+         title="${s.name}">
+      <span class="school-icon">${s.icon}</span>
+      <span class="school-label">${s.name}</span>
+    </div>
+  `).join('');
+
+  schoolListEl.querySelectorAll('.school-item').forEach(item => {
+    item.addEventListener('click', () => {
+      currentSchool = item.dataset.school;
+      filteredChars = currentSchool === 'all' 
+        ? [...characters] 
+        : characters.filter(c => c.school === currentSchool);
+      currentCharIndex = 0;
+      renderSchools();
+      renderThumbs();
+      renderCharacter();
+    });
+  });
+}
+
+function renderStars(count) {
+  return Array.from({ length: 3 }, (_, i) => `
+    <span class="char-star ${i < count ? '' : 'empty'}">★</span>
+  `).join('');
+}
+
+function renderThumbs() {
+  thumbsListEl.innerHTML = filteredChars.map((c, i) => {
+    const s = getSchool(c.school);
+    return `
+      <div class="thumb-item ${i === currentCharIndex ? 'active' : ''}" data-index="${i}" title="${c.nameCn}">
+        <img src="characters/${c.id}-thumb.png" alt="${c.nameCn}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <span class="thumb-initial" style="display:none;color:${s.color}">${c.nameEn.slice(0,2)}</span>
+      </div>
+    `;
+  }).join('');
+
+  thumbsListEl.querySelectorAll('.thumb-item').forEach(item => {
+    item.addEventListener('click', () => {
+      currentCharIndex = parseInt(item.dataset.index, 10);
+      renderThumbs();
+      renderCharacter();
+    });
+  });
+}
+
+function renderScrollDots() {
+  const total = Math.min(filteredChars.length, 21);
+  scrollDotsEl.innerHTML = Array.from({ length: total }, (_, i) => `
+    <div class="scroll-dot ${i === currentCharIndex ? 'active' : ''}" data-index="${i}"></div>
+  `).join('');
+
+  scrollDotsEl.querySelectorAll('.scroll-dot').forEach(dot => {
+    dot.addEventListener('click', () => {
+      const idx = parseInt(dot.dataset.index, 10);
+      if (idx < filteredChars.length) {
+        currentCharIndex = idx;
+        renderThumbs();
+        renderCharacter();
+      }
+    });
+  });
+}
+
+function renderCharacter() {
+  const char = filteredChars[currentCharIndex];
+  if (!char) return;
+  const school = getSchool(char.school);
+
+  // 切换动画
+  charPortraitEl.classList.add('fade');
+  setTimeout(() => {
+    charNameEnEl.textContent = char.nameEn;
+    charNameCnEl.textContent = char.nameCn;
+    charSchoolIconEl.textContent = school.icon;
+    charSchoolIconEl.style.backgroundColor = school.color;
+    charStarsEl.innerHTML = renderStars(char.star);
+    charCvEl.innerHTML = `
+      <span><span class="cv-label">日配</span>${char.cvJp}</span>
+      <span><span class="cv-label">中配</span>${char.cvCn}</span>
+    `;
+    charSchoolEl.textContent = char.schoolName;
+    charClubEl.textContent = char.club;
+    charBirthEl.textContent = char.birthday;
+
+    charPortraitEl.src = `characters/${char.id}.png`;
+    charPortraitEl.alt = char.nameCn;
+    charPortraitEl.style.display = 'block';
+    charPortraitEl.classList.remove('fade');
+
+    placeholderTextEl.textContent = char.nameEn;
+
+    schoolBadgeTextEl.textContent = school.icon;
+    schoolBadgeEl.style.color = school.color;
+    schoolBadgeEl.style.backgroundColor = `${school.color}15`;
+
+    weaponImgEl.src = `characters/${char.id}-weapon.png`;
+    weaponImgEl.alt = `${char.nameCn} 武器`;
+    weaponImgEl.style.display = 'block';
+    weaponIdEl.textContent = char.weaponType;
+    weaponNameEl.textContent = char.weaponName;
+
+    charNameFooterEl.textContent = char.nameFull;
+
+    renderScrollDots();
+  }, 150);
+}
+
+// 初始化档案页面
+renderSchools();
+renderThumbs();
+renderCharacter();
+initGallery();
+
+// 键盘左右切换角色（在档案页面时）
+document.addEventListener('keydown', (e) => {
+  const archive = document.getElementById('archive-section');
+  if (archive.style.display === 'none') return;
+  if (e.key === 'ArrowLeft') {
+    currentCharIndex = (currentCharIndex - 1 + filteredChars.length) % filteredChars.length;
+    renderThumbs();
+    renderCharacter();
+  } else if (e.key === 'ArrowRight') {
+    currentCharIndex = (currentCharIndex + 1) % filteredChars.length;
+    renderThumbs();
+    renderCharacter();
+  }
+});
+</script>
+</body>
+</html>
