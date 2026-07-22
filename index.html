@@ -1212,8 +1212,9 @@ body {
     </div>
     <div class="lore-right">
       <div class="lore-image">
-        <!-- 把世界观插图放到网页同目录并命名为 lore-city.png 即可替换占位图 -->
-        <img src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'">
+        <!-- 世界观插图占位：.lore-image 已有渐变背景作为默认展示，如需替换可在同目录放置 lore-city.png 并取消下一行注释 -->
+        <!-- <img src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'"> -->
+        <div class="lore-image-placeholder">KIVOTOS</div>
       </div>
     </div>
   </div>
@@ -1266,7 +1267,9 @@ body {
             <div class="weapon-id" id="weaponId">AR</div>
             <div class="weapon-name" id="weaponName">hoshino</div>
           </div>
-          <img id="weaponImg" src="characters/hoshino-weapon.png" alt="武器" onerror="handleImageError(this)">
+          <!-- 武器图占位：未提供武器图片资源，保留 weapon-card 装饰即可。如需启用可在同目录放置 characters/{id}-weapon.png 并取消下一行注释 -->
+          <!-- <img id="weaponImg" src="characters/hoshino-weapon.png" alt="武器" onerror="handleImageError(this)"> -->
+          <img id="weaponImg" alt="武器" style="display:none;">
         </div>
       </div>
     </div>
@@ -1823,9 +1826,10 @@ function renderCharacter() {
     schoolBadgeEl.style.color = school.color;
     schoolBadgeEl.style.backgroundColor = `${school.color}15`;
 
-    weaponImgEl.src = `characters/${char.id}-weapon.png`;
+    // 武器图未提供资源，保持隐藏，仅展示 weapon-card 装饰
+    weaponImgEl.removeAttribute('src');
     weaponImgEl.alt = `${char.nameCn} 武器`;
-    weaponImgEl.style.display = 'block';
+    weaponImgEl.style.display = 'none';
     weaponIdEl.textContent = char.weaponType;
     weaponNameEl.textContent = char.weaponName;
 
