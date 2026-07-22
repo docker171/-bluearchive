@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Kitvos - 手机版</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+
+/* ===== 顶部导航栏 ===== */
+.m-header {
+  position: fixed; top: 0; left: 0; width: 100%; height: 50px;
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 1rem; z-index: 100;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+}
+.m-logo { height: 30px; object-fit: contain; }
+.m-header-right { display: flex; align-items: center; gap: 0.75rem; }
+.m-icon-btn {
+  width: 36px; height: 36px; border: none; background: transparent;
+  cursor: pointer; padding: 0; display: flex; align-items: center; justify-content: center;
+}
+.m-icon-btn img { width: 22px; height: 22px; object-fit: contain; }
+.m-menu-btn {
+  width: 36px; height: 36px; border: none; background: transparent;
+  cursor: pointer; padding: 0; display: flex; flex-direction: column;
+  justify-content: center; align-items: center; gap: 5px;
+}
+.m-menu-btn span {
+  display: block; width: 22px; height: 2px; background: #fff;
+  border-radius: 1px; transition: all 0.3s;
+}
+.m-menu-btn.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.m-menu-btn.open span:nth-child(2) { opacity: 0; }
+.m-menu-btn.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* ===== 侧边导航 ===== */
+.m-nav-overlay {
+  position: fixed; top: 0; right: -280px; width: 280px; height: 100vh;
+  background: linear-gradient(160deg, #1a2d52 0%, #0f1d3a 100%);
+  z-index: 99; transition: right 0.3s ease; padding-top: 50px;
+  display: flex; flex-direction: column;
+}
+.m-nav-overlay.open { right: 0; }
+.m-nav-overlay::before {
+  content: ''; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+  background: rgba(0,0,0,0.5); z-index: -1; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+.m-nav-overlay.open::before { opacity: 1; pointer-events: auto; }
+.m-nav-item {
+  padding: 1rem 1.5rem; color: #fff; font-size: 1.1rem; cursor: pointer;
+  border-bottom: 1px solid rgba(255,255,255,0.1); text-decoration: none;
+  display: block; transition: background 0.2s;
+}
+.m-nav-item:active { background: rgba(255,255,255,0.1); }
+.m-nav-item.active { color: #4a9eff; border-left: 3px solid #4a9eff; }
+
+/* ===== 页面版块 ===== */
+.m-section { display: none; padding-top: 50px; min-height: 100vh; }
+.m-section.active { display: block; }
+
+/* ===== 首页 ===== */
+#home-section { padding-top: 0; position: relative; }
+.m-home-bg {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+  background-size: cover; background-position: center;
+}
+.m-home-overlay {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100vh;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.3) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.5) 100%);
+}
+.m-home-content {
+  position: relative; z-index: 2; height: 100vh;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: #fff; text-align: center; padding: 2rem;
+}
+.m-home-title { font-size: 1.8rem; font-weight: 800; text-shadow: 2px 2px 6px rgba(0,0,0,0.8); margin-bottom: 0.5rem; }
+.m-home-sub { font-size: 1rem; text-shadow: 1px 1px 3px rgba(0,0,0,0.8); letter-spacing: 0.1em; opacity: 0.9; }
+.m-play-btn {
+  position: absolute; bottom: 3rem; left: 50%; transform: translateX(-50%);
+  width: 64px; height: 64px; border: none; background: transparent;
+  cursor: pointer; padding: 0; transition: transform 0.2s;
+}
+.m-play-btn:active { transform: translateX(-50%) scale(0.9); }
+.m-play-btn img { width: 100%; height: 100%; object-fit: contain; }
+
+/* ===== 快讯 ===== */
+#news-section { background: linear-gradient(135deg, #f5f9ff 0%, #eef5ff 100%); }
+.m-page-title {
+  text-align: center; font-size: 1.5rem; font-weight: 800; color: #1a3a6c;
+  padding: 1.5rem 1rem 1rem; letter-spacing: 0.1em;
+}
+.m-news-list { list-style: none; padding: 0 1rem; }
+.m-news-item {
+  background: #fff; border-radius: 12px; padding: 1rem; margin-bottom: 0.75rem;
+  box-shadow: 0 2px 8px rgba(30,70,130,0.08); display: flex; flex-direction: column; gap: 0.4rem;
+}
+.m-news-tag {
+  display: inline-block; font-size: 0.7rem; padding: 2px 8px; border-radius: 4px;
+  font-weight: 600; width: fit-content;
+}
+.m-news-tag.tag-notice { background: #fff3e0; color: #e65100; }
+.m-news-tag.tag-activity { background: #e8f5e9; color: #2e7d32; }
+.m-news-date { font-size: 0.8rem; color: #999; }
+.m-news-link { font-size: 0.95rem; color: #1a3a6c; text-decoration: none; line-height: 1.4; }
+.m-news-link:active { color: #4a9eff; }
+.m-news-more {
+  display: block; text-align: center; padding: 1rem; color: #4a7fc4;
+  text-decoration: none; font-size: 0.9rem;
+}
+
+/* ===== 设定 ===== */
+#lore-section { background: linear-gradient(135deg, #f0f5fc 0%, #e2edf9 100%); }
+.m-lore-content { padding: 0 1.25rem 2rem; }
+.m-lore-title-en { text-align: center; font-size: 2rem; font-weight: 800; color: #1a3a6c; letter-spacing: 0.15em; margin-bottom: 0.25rem; }
+.m-lore-title-cn { text-align: center; font-size: 1.1rem; font-weight: 600; color: #4a7fc4; margin-bottom: 1.5rem; }
+.m-lore-text p { font-size: 0.9rem; line-height: 1.8; color: #333; margin-bottom: 0.75rem; }
+.m-lore-text strong { color: #1a3a6c; }
+.m-lore-img { width: 100%; border-radius: 12px; margin-top: 1rem; box-shadow: 0 4px 16px rgba(30,70,130,0.15); }
+.m-lore-footer { text-align: center; font-size: 0.75rem; color: #8aa8cc; letter-spacing: 0.1em; margin-top: 1.5rem; }
+
+/* ===== 档案 ===== */
+#archive-section { background: linear-gradient(135deg, #e8f0fc 0%, #d5e5f7 100%); }
+.m-school-filter {
+  display: flex; gap: 0.5rem; padding: 0.75rem 1rem; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.m-school-filter::-webkit-scrollbar { display: none; }
+.m-school-item {
+  flex-shrink: 0; padding: 0.4rem 0.9rem; border-radius: 20px; font-size: 0.8rem;
+  font-weight: 600; background: rgba(255,255,255,0.7); color: #4a7fc4;
+  cursor: pointer; white-space: nowrap; transition: all 0.2s; border: 1px solid transparent;
+}
+.m-school-item.active { background: #4a9eff; color: #fff; border-color: #4a9eff; }
+.m-char-portrait-wrap {
+  width: 100%; height: 45vh; display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.m-char-portrait-wrap::before {
+  content: ''; position: absolute; width: 60%; height: 60%;
+  background: radial-gradient(circle, rgba(74,159,255,0.2) 0%, transparent 70%);
+  filter: blur(20px);
+}
+.m-char-portrait {
+  max-height: 100%; max-width: 90%; object-fit: contain; position: relative; z-index: 1;
+  filter: drop-shadow(0 4px 12px rgba(40,85,150,0.3));
+  transition: opacity 0.15s;
+}
+.m-char-portrait.fade { opacity: 0; }
+.m-char-info { padding: 0 1.25rem; }
+.m-char-name-en { font-size: 1.5rem; font-weight: 800; color: #1a3a6c; letter-spacing: 0.05em; }
+.m-char-name-row { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.2rem; }
+.m-char-school-icon { width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 0.8rem; color: #fff; flex-shrink: 0; }
+.m-char-name-cn { font-size: 1.1rem; font-weight: 600; color: #333; }
+.m-char-stars { margin-top: 0.5rem; display: flex; gap: 2px; }
+.m-char-star { font-size: 1rem; color: #f5a623; }
+.m-char-star.empty { color: #ccc; }
+.m-char-cv { margin-top: 0.5rem; display: flex; gap: 1rem; flex-wrap: wrap; font-size: 0.8rem; color: #555; }
+.m-cv-label { display: inline-block; background: #4a9eff; color: #fff; font-size: 0.65rem; padding: 1px 5px; border-radius: 3px; margin-right: 4px; }
+.m-info-rows { margin-top: 0.75rem; background: rgba(255,255,255,0.6); border-radius: 10px; padding: 0.75rem; }
+.m-info-row { display: flex; justify-content: space-between; padding: 0.35rem 0; border-bottom: 1px solid rgba(0,0,0,0.06); font-size: 0.85rem; }
+.m-info-row:last-child { border-bottom: none; }
+.m-info-label { color: #888; }
+.m-info-value { color: #333; font-weight: 500; }
+.m-thumbs {
+  display: flex; gap: 0.5rem; padding: 1rem; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.m-thumbs::-webkit-scrollbar { display: none; }
+.m-thumb-item {
+  flex-shrink: 0; width: 48px; height: 48px; border-radius: 8px; overflow: hidden;
+  border: 2px solid transparent; cursor: pointer; background: rgba(255,255,255,0.5);
+}
+.m-thumb-item.active { border-color: #4a9eff; }
+.m-thumb-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* ===== 图集 ===== */
+#gallery-section { background: linear-gradient(135deg, #f0f5fc 0%, #e2edf9 50%, #d5e5f7 100%); }
+.m-gallery-filter {
+  display: flex; gap: 0.5rem; padding: 0 1rem 1rem; overflow-x: auto;
+  -webkit-overflow-scrolling: touch; scrollbar-width: none;
+}
+.m-gallery-filter::-webkit-scrollbar { display: none; }
+.m-filter-tab {
+  flex-shrink: 0; padding: 0.4rem 0.85rem; border-radius: 16px; font-size: 0.78rem;
+  font-weight: 600; background: rgba(255,255,255,0.7); color: #4a7fc4;
+  border: 1px solid transparent; cursor: pointer; white-space: nowrap;
+  display: flex; align-items: center; gap: 4px; transition: all 0.2s;
+}
+.m-filter-tab.active { background: #4a9eff; color: #fff; }
+.m-filter-count { font-size: 0.65rem; background: rgba(0,0,0,0.15); padding: 0 5px; border-radius: 8px; }
+.m-filter-tab.active .m-filter-count { background: rgba(255,255,255,0.3); }
+.m-gallery-grid {
+  display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; padding: 0 1rem 2rem;
+}
+.m-gallery-item {
+  position: relative; border-radius: 10px; overflow: hidden; background: #fff;
+  box-shadow: 0 2px 8px rgba(30,70,130,0.1); cursor: pointer; aspect-ratio: 16/10;
+}
+.m-gallery-item.hidden { display: none; }
+.m-gallery-item img { width: 100%; height: 100%; object-fit: cover; }
+.m-gallery-tag {
+  position: absolute; top: 6px; left: 6px; background: rgba(74,159,255,0.85);
+  color: #fff; font-size: 0.6rem; padding: 2px 6px; border-radius: 4px; font-weight: 600;
+}
+.m-gallery-empty { grid-column: 1/-1; text-align: center; padding: 3rem 1rem; color: #8aa8cc; font-size: 0.9rem; }
+
+/* ===== Lightbox ===== */
+.m-lightbox {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.92);
+  z-index: 9999; align-items: center; justify-content: center; padding: 1rem; cursor: zoom-out;
+}
+.m-lightbox.active { display: flex; }
+.m-lightbox img { max-width: 95vw; max-height: 85vh; border-radius: 8px; }
+
+/* ===== 视频弹窗 ===== */
+.m-video-mask {
+  display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.95);
+  z-index: 9998; align-items: center; justify-content: center; padding: 1rem; flex-direction: column;
+}
+.m-video-mask.active { display: flex; }
+.m-video-mask video { width: 100%; max-height: 80vh; }
+.m-video-close {
+  position: absolute; top: 1rem; right: 1rem; width: 40px; height: 40px;
+  border-radius: 50%; background: rgba(255,255,255,0.2); border: none; color: #fff;
+  font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center;
+}
+</style>
+</head>
+<body>
+
+<!-- UA 检测：桌面访问跳转回桌面版 -->
+<script>
+(function(){
+  var ua = navigator.userAgent || '';
+  var isMobile = /Android|iPhone|iPad|iPod|Mobile|Windows Phone|BlackBerry|Opera Mini|IEMobile/i.test(ua);
+  if (!isMobile) {
+    window.location.replace('index.html');
+  }
+})();
+</script>
+
+<!-- 背景音乐 -->
+<audio id="bgMusic" loop>
+  <source src="9.mp3" type="audio/mpeg">
+</audio>
+
+<!-- 顶部导航栏 -->
+<header class="m-header">
+  <img class="m-logo" src="2.png" alt="Logo">
+  <div class="m-header-right">
+    <button id="musicBtn" class="m-icon-btn" aria-label="切换音乐">
+      <img id="musicIcon" src="m.png" alt="音乐">
+    </button>
+    <button id="menuBtn" class="m-menu-btn" aria-label="菜单">
+      <span></span><span></span><span></span>
+    </button>
+  </div>
+</header>
+
+<!-- 侧边导航 -->
+<div class="m-nav-overlay" id="navOverlay">
+  <div class="m-nav-item active" data-section="home">首 页</div>
+  <div class="m-nav-item" data-section="news">快 讯</div>
+  <div class="m-nav-item" data-section="lore">设 定</div>
+  <div class="m-nav-item" data-section="archive">档 案</div>
+  <div class="m-nav-item" data-section="gallery">图 集</div>
+  <a href="https://bluearchive-cn.com/" target="_blank" rel="noopener noreferrer" class="m-nav-item">官 网</a>
+</div>
+
+<!-- 首页 -->
+<section class="m-section active" id="home-section">
+  <div class="m-home-bg" style="background-image: url('1.jpeg')"></div>
+  <div class="m-home-overlay"></div>
+  <div class="m-home-content">
+    <h1 class="m-home-title">欢迎来到基沃托斯</h1>
+    <p class="m-home-sub">welcome to kitvos</p>
+    <button class="m-play-btn" onclick="openVideo()" aria-label="播放视频">
+      <img src="play.png" alt="播放">
+    </button>
+  </div>
+</section>
+
+<!-- 快讯 -->
+<section class="m-section" id="news-section">
+  <h2 class="m-page-title">社团快讯</h2>
+  <ul class="m-news-list">
+    <li class="m-news-item">
+      <span class="m-news-tag tag-notice">公告</span>
+      <span class="m-news-date">26.07.16</span>
+      <a class="m-news-link" href="https://bluearchive-cn.com/news/1868" target="_blank" rel="noopener noreferrer">07月16日异常问题说明</a>
+    </li>
+    <li class="m-news-item">
+      <span class="m-news-tag tag-activity">活动</span>
+      <span class="m-news-date">26.07.15</span>
+      <a class="m-news-link" href="https://bluearchive-cn.com/news/1867" target="_blank" rel="noopener noreferrer">07月16日维护更新说明</a>
+    </li>
+    <li class="m-news-item">
+      <span class="m-news-tag tag-notice">公告</span>
+      <span class="m-news-date">26.07.14</span>
+      <a class="m-news-link" href="https://bluearchive-cn.com/news/1866" target="_blank" rel="noopener noreferrer">07月16日功能新增&amp;优化说明</a>
+    </li>
+    <li class="m-news-item">
+      <span class="m-news-tag tag-activity">活动</span>
+      <span class="m-news-date">26.07.14</span>
+      <a class="m-news-link" href="https://bluearchive-cn.com/news/1850" target="_blank" rel="noopener noreferrer">PRAY-BALL!目标：满贯本垒打</a>
+    </li>
+  </ul>
+  <a class="m-news-more" href="https://bluearchive-cn.com/news" target="_blank" rel="noopener noreferrer">更多新闻 &gt;&gt;</a>
+</section>
+
+<!-- 设定 -->
+<section class="m-section" id="lore-section">
+  <div class="m-lore-content">
+    <h2 class="m-lore-title-en">KIVOTOS</h2>
+    <h3 class="m-lore-title-cn">世界观概况</h3>
+    <div class="m-lore-text">
+      <p><strong>基沃托斯</strong>，一片神秘而辽阔的土地，头上有着奇异光环的少女们生活在这里。然而，联邦理事会管理下的平静生活随着会长的不辞而别被打破，在群龙无首的基沃托斯，危机一触即发！</p>
+      <p>在这样的混乱之中，会长留下的搜查社"沙勒"将扮演怎样的角色？从外面的世界来到基沃托斯的老师又将与少女们发生怎样的邂逅？</p>
+      <p>巨额债务、废部危机、两大对立势力间的条约签订……各种各样的难题，等待着老师去解决。</p>
+      <p>友情、青春和爱的故事即将展开。</p>
+    </div>
+    <img class="m-lore-img" src="lore-city.png" alt="基沃托斯城市" onerror="this.style.display='none'">
+    <div class="m-lore-footer">BLUE ARCHIVE /// KIVOTOS</div>
+  </div>
+</section>
+
+<!-- 档案 -->
+<section class="m-section" id="archive-section">
+  <div class="m-school-filter" id="schoolList"></div>
+  <div class="m-char-portrait-wrap">
+    <img class="m-char-portrait" id="charPortrait" src="characters/hoshino.png" alt="角色立绘" onerror="this.style.display='none'">
+  </div>
+  <div class="m-char-info">
+    <h1 class="m-char-name-en" id="charNameEn">HOSHINO</h1>
+    <div class="m-char-name-row">
+      <span class="m-char-school-icon" id="charSchoolIcon">△</span>
+      <h2 class="m-char-name-cn" id="charNameCn">小鸟游星野</h2>
+    </div>
+    <div class="m-char-stars" id="charStars"></div>
+    <div class="m-char-cv" id="charCv">
+      <span><span class="m-cv-label">日配</span>花守由美里</span>
+      <span><span class="m-cv-label">中配</span>刘雯</span>
+    </div>
+    <div class="m-info-rows">
+      <div class="m-info-row"><span class="m-info-label">所属</span><span class="m-info-value" id="charSchool">阿拜多斯</span></div>
+      <div class="m-info-row"><span class="m-info-label">社团</span><span class="m-info-value" id="charClub">对策委员会</span></div>
+      <div class="m-info-row"><span class="m-info-label">生日</span><span class="m-info-value" id="charBirth">1月2日</span></div>
+    </div>
+  </div>
+  <div class="m-thumbs" id="thumbsList"></div>
+</section>
+
+<!-- 图集 -->
+<section class="m-section" id="gallery-section">
+  <h2 class="m-page-title">图集</h2>
+  <div class="m-gallery-filter" id="galleryFilter"></div>
+  <div class="m-gallery-grid" id="galleryGrid"></div>
+</section>
+
+<!-- Lightbox -->
+<div class="m-lightbox" id="galleryLightbox" onclick="closeGalleryLightbox()">
+  <img id="galleryLightboxImg" src="" alt="大图">
+</div>
+
+<!-- 视频弹窗 -->
+<div class="m-video-mask" id="videoMask">
+  <button class="m-video-close" onclick="closeVideo()" aria-label="关闭">×</button>
+  <video id="myVideo" controls>
+    <source src="3.mp4" type="video/mp4">
+  </video>
+</div>
+
+<script>
+// ===== 音乐控制 =====
+var bgMusic = document.getElementById('bgMusic');
+var musicBtn = document.getElementById('musicBtn');
+var musicIcon = document.getElementById('musicIcon');
+var isMusicOn = false;
+var audioInit = false;
+
+musicBtn.addEventListener('click', function(e) {
+  e.stopPropagation();
+  if (!audioInit) { bgMusic.load(); audioInit = true; }
+  if (!isMusicOn) {
+    bgMusic.play().then(function() {
+      isMusicOn = true;
+      musicIcon.src = '3.png';
+    }).catch(function() {
+      alert('背景音乐播放失败：请确认 9.mp3 与页面同目录');
+    });
+  } else {
+    bgMusic.pause();
+    isMusicOn = false;
+    musicIcon.src = 'm.png';
+  }
+});
+
+// ===== 导航菜单 =====
+var menuBtn = document.getElementById('menuBtn');
+var navOverlay = document.getElementById('navOverlay');
+var navItems = document.querySelectorAll('.m-nav-item');
+
+menuBtn.addEventListener('click', function(e) {
+  e.stopPropagation();
+  menuBtn.classList.toggle('open');
+  navOverlay.classList.toggle('open');
+});
+
+navOverlay.addEventListener('click', function(e) {
+  if (e.target === navOverlay) {
+    menuBtn.classList.remove('open');
+    navOverlay.classList.remove('open');
+  }
+});
+
+// ===== 页面切换 =====
+var sectionMap = {
+  home: 'home-section',
+  news: 'news-section',
+  lore: 'lore-section',
+  archive: 'archive-section',
+  gallery: 'gallery-section'
+};
+
+function switchSection(targetName) {
+  var targetId = sectionMap[targetName] || 'home-section';
+  navItems.forEach(function(n) {
+    n.classList.toggle('active', n.dataset.section === targetName);
+  });
+  document.querySelectorAll('.m-section').forEach(function(s) {
+    s.classList.remove('active');
+  });
+  var target = document.getElementById(targetId);
+  if (target) target.classList.add('active');
+  // 关闭菜单
+  menuBtn.classList.remove('open');
+  navOverlay.classList.remove('open');
+  // 滚动到顶部
+  window.scrollTo(0, 0);
+}
+
+navItems.forEach(function(item) {
+  if (item.dataset.section) {
+    item.addEventListener('click', function() {
+      switchSection(item.dataset.section);
+    });
+  }
+});
+
+// ===== 视频弹窗 =====
+var videoMask = document.getElementById('videoMask');
+var video = document.getElementById('myVideo');
+
+function openVideo() {
+  videoMask.classList.add('active');
+  if (isMusicOn) bgMusic.pause();
+  video.play().catch(function() {
+    alert('视频播放失败：确认 3.mp4 文件和网页同文件夹');
+  });
+}
+
+function closeVideo() {
+  videoMask.classList.remove('active');
+  video.pause();
+  video.currentTime = 0;
+  if (isMusicOn) bgMusic.play().catch(function() {});
+}
+
+videoMask.addEventListener('click', function(e) {
+  if (e.target === videoMask) closeVideo();
+});
+
+// ===== 图集数据 =====
+var galleryData = [
+  { id: 1,  category: 'wallpaper' },
+  { id: 2,  category: 'wallpaper' },
+  { id: 3,  category: 'wallpaper' },
+  { id: 4,  category: 'wallpaper' },
+  { id: 5,  category: 'wallpaper' },
+  { id: 6,  category: 'wallpaper' },
+  { id: 7,  category: 'wallpaper' },
+  { id: 8,  category: 'wallpaper' },
+  { id: 9,  category: 'comic' },
+  { id: 10, category: 'comic' },
+  { id: 11, category: 'comic' },
+  { id: 12, category: 'comic' },
+  { id: 13, category: 'comic' },
+  { id: 14, category: 'comic' },
+  { id: 15, category: 'comic' },
+  { id: 16, category: 'comic' },
+  { id: 17, category: 'comic' },
+  { id: 18, category: 'comic' },
+  { id: 19, category: 'episode', episode: 1, chapter: 1 },
+  { id: 20, category: 'episode', episode: 1, chapter: 1 },
+  { id: 21, category: 'episode', episode: 1, chapter: 1 },
+  { id: 22, category: 'episode', episode: 1, chapter: 1 },
+  { id: 23, category: 'episode', episode: 1, chapter: 1 },
+  { id: 24, category: 'episode', episode: 1, chapter: 2 },
+  { id: 25, category: 'episode', episode: 1, chapter: 2 },
+  { id: 26, category: 'episode', episode: 1, chapter: 2 },
+  { id: 27, category: 'episode', episode: 1, chapter: 2 },
+  { id: 28, category: 'episode', episode: 1, chapter: 2 },
+  { id: 29, category: 'episode', episode: 2, chapter: 1 },
+  { id: 30, category: 'episode', episode: 2, chapter: 1 },
+  { id: 31, category: 'episode', episode: 2, chapter: 1 },
+  { id: 32, category: 'episode', episode: 2, chapter: 1 },
+  { id: 33, category: 'episode', episode: 2, chapter: 1 },
+  { id: 34, category: 'episode', episode: 2, chapter: 1 },
+  { id: 35, category: 'episode', episode: 2, chapter: 1 }
+];
+
+function categoryLabel(item) {
+  if (item.category === 'wallpaper') return '壁纸';
+  if (item.category === 'comic') return '漫画';
+  if (item.category === 'episode') return '第' + item.episode + '部 ' + item.chapter + '话';
+  return '';
+}
+
+function buildGalleryFilters() {
+  var filters = [{ key: 'all', label: '全部' }];
+  var wpCount = galleryData.filter(function(g) { return g.category === 'wallpaper'; }).length;
+  var comicCount = galleryData.filter(function(g) { return g.category === 'comic'; }).length;
+  if (wpCount) filters.push({ key: 'wallpaper', label: '壁纸', count: wpCount });
+  if (comicCount) filters.push({ key: 'comic', label: '漫画', count: comicCount });
+  var episodeMap = {};
+  galleryData.forEach(function(g) {
+    if (g.category === 'episode') {
+      var k = g.episode + '-' + g.chapter;
+      if (!episodeMap[k]) episodeMap[k] = 0;
+      episodeMap[k]++;
+    }
+  });
+  Object.keys(episodeMap).sort(function(a, b) {
+    var pa = a.split('-').map(Number), pb = b.split('-').map(Number);
+    return pa[0] - pb[0] || pa[1] - pb[1];
+  }).forEach(function(k) {
+    var parts = k.split('-');
+    filters.push({ key: 'episode-' + k, label: '第' + parts[0] + '部第' + parts[1] + '话', count: episodeMap[k] });
+  });
+  return filters;
+}
+
+function initGallery() {
+  var grid = document.getElementById('galleryGrid');
+  var filterBar = document.getElementById('galleryFilter');
+  if (!grid) return;
+
+  var filters = buildGalleryFilters();
+  filterBar.innerHTML = '';
+  filters.forEach(function(f, idx) {
+    var tab = document.createElement('button');
+    tab.className = 'm-filter-tab' + (idx === 0 ? ' active' : '');
+    tab.dataset.filter = f.key;
+    tab.innerHTML = f.label + (f.count != null ? '<span class="m-filter-count">' + f.count + '</span>' : '');
+    tab.onclick = function() { filterGallery(f.key); };
+    filterBar.appendChild(tab);
+  });
+
+  grid.innerHTML = '';
+  galleryData.forEach(function(item) {
+    var div = document.createElement('div');
+    div.className = 'm-gallery-item';
+    div.dataset.category = item.category;
+    if (item.category === 'episode') {
+      div.dataset.episode = item.episode + '-' + item.chapter;
+    }
+    div.onclick = function() { openGalleryLightbox(item.id); };
+
+    var tag = document.createElement('span');
+    tag.className = 'm-gallery-tag';
+    tag.textContent = categoryLabel(item);
+    div.appendChild(tag);
+
+    var img = document.createElement('img');
+    img.src = 'gallery/gallery-' + String(item.id).padStart(2, '0') + '.jpg';
+    img.alt = '图集 ' + item.id;
+    img.loading = 'lazy';
+    div.appendChild(img);
+    grid.appendChild(div);
+  });
+}
+
+function filterGallery(key) {
+  document.querySelectorAll('.m-filter-tab').forEach(function(t) {
+    t.classList.toggle('active', t.dataset.filter === key);
+  });
+  var visibleCount = 0;
+  document.querySelectorAll('.m-gallery-item').forEach(function(item) {
+    var show = false;
+    if (key === 'all') {
+      show = true;
+    } else if (key.indexOf('episode-') === 0) {
+      show = item.dataset.episode === key.replace('episode-', '');
+    } else {
+      show = item.dataset.category === key;
+    }
+    item.classList.toggle('hidden', !show);
+    if (show) visibleCount++;
+  });
+  var empty = document.getElementById('galleryEmpty');
+  if (visibleCount === 0) {
+    if (!empty) {
+      empty = document.createElement('div');
+      empty.id = 'galleryEmpty';
+      empty.className = 'm-gallery-empty';
+      empty.textContent = '该分类下暂无图片';
+      document.getElementById('galleryGrid').appendChild(empty);
+    }
+  } else if (empty) {
+    empty.remove();
+  }
+}
+
+function openGalleryLightbox(index) {
+  var lightbox = document.getElementById('galleryLightbox');
+  var img = document.getElementById('galleryLightboxImg');
+  img.src = 'gallery/gallery-' + String(index).padStart(2, '0') + '.jpg';
+  lightbox.classList.add('active');
+}
+
+function closeGalleryLightbox() {
+  document.getElementById('galleryLightbox').classList.remove('active');
+}
+
+// ===== 角色档案系统 =====
+var schools = [
+  { id: 'all', name: '全部', icon: '✦', color: '#2d8cf0' },
+  { id: 'abydos', name: '阿拜多斯', icon: '△', color: '#f5a623' },
+  { id: 'millennium', name: '千年', icon: '◇', color: '#2d8cf0' },
+  { id: 'gehenna', name: '歌赫娜', icon: '✦', color: '#e74c3c' },
+  { id: 'trinity', name: '崔尼蒂', icon: '✚', color: '#9b59b6' },
+  { id: 'hyakkiyako', name: '百鬼夜行', icon: '◎', color: '#e91e63' },
+  { id: 'shanhaijing', name: '山海经', icon: '◉', color: '#1abc9c' }
+];
+
+var characters = [
+  { id: 'hoshino', nameEn: 'HOSHINO', nameCn: '小鸟游星野', school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '1月2日', star: 3, cvJp: '花守由美里', cvCn: '刘雯', weaponType: 'SG', weaponName: 'hoshino' },
+  { id: 'ayane', nameEn: 'AYANE', nameCn: '奥空绫音', school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '11月12日', star: 2, cvJp: '原田彩枫', cvCn: '孙艳琦', weaponType: 'HG', weaponName: 'ayane' },
+  { id: 'serika', nameEn: 'SERIKA', nameCn: '黑见芹香', school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '6月25日', star: 2, cvJp: '大桥彩香', cvCn: '宴宁', weaponType: 'AR', weaponName: 'serika' },
+  { id: 'nonomi', nameEn: 'NONOMI', nameCn: '十六夜野宫', school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '9月1日', star: 2, cvJp: '三浦千幸', cvCn: '幽舞越山', weaponType: 'MG', weaponName: 'nonomi' },
+  { id: 'shiroko', nameEn: 'SHIROKO', nameCn: '砂狼白子', school: 'abydos', schoolName: '阿拜多斯', club: '对策委员会', birthday: '5月16日', star: 3, cvJp: '小仓唯', cvCn: '安雪璃', weaponType: 'AR', weaponName: 'shiroko' },
+  { id: 'aris', nameEn: 'ARIS', nameCn: '天童爱丽丝', school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '3月25日', star: 3, cvJp: '田中美海', cvCn: '四白', weaponType: 'RG', weaponName: 'aris' },
+  { id: 'midori', nameEn: 'MIDORI', nameCn: '才羽绿', school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '12月8日', star: 3, cvJp: '高田忧希', cvCn: '阎么么', weaponType: 'AR', weaponName: 'midori' },
+  { id: 'momoi', nameEn: 'MOMOI', nameCn: '才羽桃', school: 'millennium', schoolName: '千年', club: '游戏开发部', birthday: '12月8日', star: 2, cvJp: '德井青空', cvCn: '苏枕袖', weaponType: 'AR', weaponName: 'momoi' },
+  { id: 'karin', nameEn: 'KARIN', nameCn: '角楯花凛', school: 'millennium', schoolName: '千年', club: 'C&C', birthday: '2月2日', star: 3, cvJp: '沼仓爱美', cvCn: '喵酱', weaponType: 'SR', weaponName: 'karin' },
+  { id: 'yuuka', nameEn: 'YUUKA', nameCn: '早濑优香', school: 'millennium', schoolName: '千年', club: '研讨会', birthday: '3月14日', star: 2, cvJp: '春花兰', cvCn: '小敢', weaponType: 'SMG', weaponName: 'yuuka' },
+  { id: 'mutsuki', nameEn: 'MUTSUKI', nameCn: '浅黄睦月', school: 'gehenna', schoolName: '歌赫娜', club: '便利屋68', birthday: '7月29日', star: 2, cvJp: '大久保瑠美', cvCn: '侯小菲', weaponType: 'AR', weaponName: 'mutsuki' },
+  { id: 'aru', nameEn: 'ARU', nameCn: '陆八魔爱露', school: 'gehenna', schoolName: '歌赫娜', club: '便利屋68', birthday: '3月12日', star: 3, cvJp: '近藤玲奈', cvCn: '谢莹', weaponType: 'SR', weaponName: 'aru' },
+  { id: 'iori', nameEn: 'IORI', nameCn: '银镜伊织', school: 'gehenna', schoolName: '歌赫娜', club: '风纪委员会', birthday: '11月8日', star: 3, cvJp: '佐仓绫音', cvCn: '兰笛Saku', weaponType: 'SR', weaponName: 'iori' },
+  { id: 'hina', nameEn: 'HINA', nameCn: '空崎日奈', school: 'gehenna', schoolName: '歌赫娜', club: '风纪委员会', birthday: '2月19日', star: 3, cvJp: '广桥凉', cvCn: '王雅欣', weaponType: 'MG', weaponName: 'hina' },
+  { id: 'haruna', nameEn: 'HARUNA', nameCn: '黑馆晴奈', school: 'gehenna', schoolName: '歌赫娜', club: '美食研究会', birthday: '3月1日', star: 3, cvJp: '田所梓', cvCn: 'MACE', weaponType: 'SR', weaponName: 'haruna' },
+  { id: 'hasumi', nameEn: 'HASUMI', nameCn: '羽川莲见', school: 'trinity', schoolName: '崔尼蒂', club: '正义实现部', birthday: '12月12日', star: 2, cvJp: '濑户麻沙美', cvCn: '张琦', weaponType: 'SR', weaponName: 'hasumi' },
+  { id: 'hifumi', nameEn: 'HIFUMI', nameCn: '阿慈谷日富美', school: 'trinity', schoolName: '崔尼蒂', club: '补习部', birthday: '11月27日', star: 3, cvJp: '本渡枫', cvCn: '米糊', weaponType: 'AR', weaponName: 'hifumi' },
+  { id: 'izuna', nameEn: 'IZUNA', nameCn: '久田泉奈', school: 'hyakkiyako', schoolName: '百鬼夜行', club: '忍术研究部', birthday: '12月16日', star: 3, cvJp: '阿澄佳奈', cvCn: 'Z君', weaponType: 'AR', weaponName: 'izuna' },
+  { id: 'chise', nameEn: 'CHISE', nameCn: '和乐千世', school: 'hyakkiyako', schoolName: '百鬼夜行', club: '阴阳部', birthday: '7月13日', star: 2, cvJp: '岛村侑', cvCn: '紫苏九月', weaponType: 'GL', weaponName: 'chise' },
+  { id: 'saya', nameEn: 'SAYA', nameCn: '药子纱绫', school: 'shanhaijing', schoolName: '山海经', club: '炼丹研究会', birthday: '1月3日', star: 3, cvJp: '田村由加莉', cvCn: '王晓彤', weaponType: 'HG', weaponName: 'saya' },
+  { id: 'shun', nameEn: 'SHUN', nameCn: '春原瞬', school: 'shanhaijing', schoolName: '山海经', club: '梅花园', birthday: '2月5日', star: 3, cvJp: '伊藤静', cvCn: '秦紫翼', weaponType: 'SR', weaponName: 'shun' }
+];
+
+var currentSchool = 'all';
+var currentCharIndex = 0;
+var filteredChars = characters.slice();
+
+var schoolListEl = document.getElementById('schoolList');
+var charNameEnEl = document.getElementById('charNameEn');
+var charNameCnEl = document.getElementById('charNameCn');
+var charSchoolIconEl = document.getElementById('charSchoolIcon');
+var charStarsEl = document.getElementById('charStars');
+var charCvEl = document.getElementById('charCv');
+var charSchoolEl = document.getElementById('charSchool');
+var charClubEl = document.getElementById('charClub');
+var charBirthEl = document.getElementById('charBirth');
+var charPortraitEl = document.getElementById('charPortrait');
+var thumbsListEl = document.getElementById('thumbsList');
+
+function getSchool(id) {
+  return schools.find(function(s) { return s.id === id; }) || schools[0];
+}
+
+function renderSchools() {
+  schoolListEl.innerHTML = schools.map(function(s) {
+    return '<div class="m-school-item ' + (s.id === currentSchool ? 'active' : '') + '" data-school="' + s.id + '">' + s.icon + ' ' + s.name + '</div>';
+  }).join('');
+  schoolListEl.querySelectorAll('.m-school-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      currentSchool = item.dataset.school;
+      filteredChars = currentSchool === 'all' ? characters.slice() : characters.filter(function(c) { return c.school === currentSchool; });
+      currentCharIndex = 0;
+      renderSchools();
+      renderThumbs();
+      renderCharacter();
+    });
+  });
+}
+
+function renderStars(count) {
+  return Array.from({ length: 3 }, function(_, i) {
+    return '<span class="m-char-star ' + (i < count ? '' : 'empty') + '">\u2605</span>';
+  }).join('');
+}
+
+function renderThumbs() {
+  thumbsListEl.innerHTML = filteredChars.map(function(c, i) {
+    return '<div class="m-thumb-item ' + (i === currentCharIndex ? 'active' : '') + '" data-index="' + i + '"><img src="characters/' + c.id + '.png" alt="' + c.nameCn + '" onerror="this.style.opacity=0.3"></div>';
+  }).join('');
+  thumbsListEl.querySelectorAll('.m-thumb-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      currentCharIndex = parseInt(item.dataset.index, 10);
+      renderThumbs();
+      renderCharacter();
+    });
+  });
+}
+
+function renderCharacter() {
+  var char = filteredChars[currentCharIndex];
+  if (!char) return;
+  var school = getSchool(char.school);
+  charPortraitEl.classList.add('fade');
+  setTimeout(function() {
+    charNameEnEl.textContent = char.nameEn;
+    charNameCnEl.textContent = char.nameCn;
+    charSchoolIconEl.textContent = school.icon;
+    charSchoolIconEl.style.backgroundColor = school.color;
+    charStarsEl.innerHTML = renderStars(char.star);
+    charCvEl.innerHTML = '<span><span class="m-cv-label">日配</span>' + char.cvJp + '</span><span><span class="m-cv-label">中配</span>' + char.cvCn + '</span>';
+    charSchoolEl.textContent = char.schoolName;
+    charClubEl.textContent = char.club;
+    charBirthEl.textContent = char.birthday;
+    charPortraitEl.src = 'characters/' + char.id + '.png';
+    charPortraitEl.alt = char.nameCn;
+    charPortraitEl.style.display = 'block';
+    charPortraitEl.classList.remove('fade');
+  }, 150);
+}
+
+// ===== 初始化 =====
+renderSchools();
+renderThumbs();
+renderCharacter();
+initGallery();
+
+// 阻止双击缩放
+document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
+</script>
+</body>
+</html>
