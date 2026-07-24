@@ -1152,7 +1152,7 @@ body {
 </head>
 <body>
 <!-- 背景音乐 9.mp3：audio 标签必须闭合，否则后续 DOM 会被吞进去 -->
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop preload="none">
   <source src="9.mp3" type="audio/mpeg">
   浏览器不支持音频播放
 </audio>
@@ -1242,9 +1242,9 @@ body {
     <div class="news-right">
       <div class="news-hero" id="newsHero">
         <div class="news-carousel" id="newsCarousel">
-          <div class="news-carousel-item active"><img src="news-01.jpg" alt="主线第2章更新"></div>
-          <div class="news-carousel-item"><img src="news-02.jpg" alt="PRAY-BALL活动"></div>
-          <div class="news-carousel-item"><img src="news-03.png" alt="与你的日常就是奇迹"></div>
+          <div class="news-carousel-item active"><img src="news-01.jpg" alt="主线第2章更新" fetchpriority="high"></div>
+          <div class="news-carousel-item"><img src="news-02.jpg" alt="PRAY-BALL活动" loading="lazy"></div>
+          <div class="news-carousel-item"><img src="news-03.png" alt="与你的日常就是奇迹" loading="lazy"></div>
         </div>
         <div class="news-hero-overlay">
           <div class="news-hero-text">NEWS</div>
@@ -1276,7 +1276,7 @@ body {
     </div>
     <div class="lore-right">
       <div class="lore-image">
-        <img src="lore-city.png" alt="基沃托斯城市">
+        <img src="lore-city.png" alt="基沃托斯城市" loading="lazy">
       </div>
     </div>
   </div>
@@ -1371,7 +1371,7 @@ body {
 <div class="video-mask" id="videoMask">
   <div class="video-box">
     <button type="button" class="close-video" onclick="closeVideo()" aria-label="关闭视频">×</button>
-    <video id="myVideo" controls>
+    <video id="myVideo" controls preload="none">
       <source src="3.mp4" type="video/mp4">
       当前浏览器不支持播放MP4视频
     </video>
@@ -1823,7 +1823,7 @@ function renderThumbs() {
     const s = getSchool(c.school);
     return `
       <div class="thumb-item ${i === currentCharIndex ? 'active' : ''}" data-index="${i}" title="${c.nameCn}">
-        <img src="characters/${c.id}.png" alt="${c.nameCn}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+        <img src="characters/${c.id}.png" alt="${c.nameCn}" loading="lazy" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
         <span class="thumb-initial" style="display:none;color:${s.color}">${c.nameEn.slice(0,2)}</span>
       </div>
     `;
