@@ -280,7 +280,7 @@ html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hi
 </script>
 
 <!-- 背景音乐 -->
-<audio id="bgMusic" loop>
+<audio id="bgMusic" loop preload="none">
   <source src="9.mp3" type="audio/mpeg">
 </audio>
 
@@ -411,7 +411,7 @@ html, body { width: 100%; min-height: 100vh; background: #0a1428; overflow-x: hi
 <!-- 视频弹窗 -->
 <div class="m-video-mask" id="videoMask">
   <button class="m-video-close" onclick="closeVideo()" aria-label="关闭">×</button>
-  <video id="myVideo" controls>
+  <video id="myVideo" controls preload="none">
     <source src="3.mp4" type="video/mp4">
   </video>
 </div>
